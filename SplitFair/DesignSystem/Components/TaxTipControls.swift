@@ -57,7 +57,11 @@ struct TaxTipControls: View {
                     TipChip(title: "\(percent)%", selected: selectedPercent == percent) { onPreset(percent) }
                 }
                 TipChip(title: "•••", selected: selectedPercent == nil, action: onCustom)
-                Spacer(minLength: 4)
+                Spacer(minLength: 0)
+            }
+
+            HStack {
+                Spacer()
                 Text("= \(liveTip)")
                     .font(.money(19)).foregroundStyle(limeInk)
                     .padding(.horizontal, 13).padding(.vertical, 8)
