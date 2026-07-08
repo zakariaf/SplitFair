@@ -13,10 +13,15 @@ struct BillScreen: View {
     var body: some View {
         ZStack {
             BillBackground()
-            if store.bill.people.isEmpty {
-                EmptyRosterView()
-            } else {
-                populated
+            VStack(spacing: 0) {
+                header
+                if store.bill.people.isEmpty {
+                    Spacer(minLength: 0)
+                    EmptyRosterView()
+                    Spacer(minLength: 0)
+                } else {
+                    populated
+                }
             }
         }
         .toolbar(.hidden, for: .navigationBar)
@@ -25,6 +30,35 @@ struct BillScreen: View {
         .onChange(of: store.selectedBillID) { _, newValue in
             if newValue == nil { dismiss() }
         }
+    }
+
+    /// Back to the library + an inline, editable bill title.
+    private var header: some View {
+        HStack(spacing: 12) {
+            Button { dismiss() } label: {
+                Image(systemName: "chevron.left")
+                    .font(.system(size: 18, weight: .bold)).foregroundStyle(Color.ink)
+                    .frame(width: 42, height: 42)
+                    .background(Circle().fill(Color.surface))
+                    .overlay(Circle().strokeBorder(Color.keyline, lineWidth: 2))
+                    .hardShadow(Circle(), dx: 2, dy: 3)
+            }
+            .accessibilityLabel("Back to bills")
+
+            TextField("Name this bill", text: titleBinding)
+                .font(.sectionTitle).foregroundStyle(Color.ink)
+                .textInputAutocapitalization(.words)
+                .submitLabel(.done)
+                .lineLimit(1)
+            Spacer(minLength: 0)
+        }
+        .padding(.horizontal, 20)
+        .padding(.top, 8)
+        .padding(.bottom, 10)
+    }
+
+    private var titleBinding: Binding<String> {
+        Binding(get: { store.bill.title }, set: { store.setBillTitle($0) })
     }
 
     private var populated: some View {

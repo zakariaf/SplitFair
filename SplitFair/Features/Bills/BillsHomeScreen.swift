@@ -173,9 +173,7 @@ struct BillsHomeScreen: View {
     }
 
     private func displayTitle(_ bill: Bill) -> String {
-        if !bill.title.isEmpty { return bill.title }
-        if let label = bill.items.first(where: { !$0.label.isEmpty })?.label { return label }
-        return "Untitled bill"
+        bill.title.isEmpty ? "Untitled bill" : bill.title
     }
 
     private func initials(_ person: Person) -> String {

@@ -127,6 +127,12 @@ final class BillStore {
         scheduleSave(bills[index])
     }
 
+    /// Set the open bill's title as-typed (no trimming, so spaces can be typed mid-word). Used by the
+    /// inline title field on the Bill screen.
+    func setBillTitle(_ title: String) {
+        mutateCurrent { $0.title = title }
+    }
+
     // MARK: - Roster & "you"
 
     /// Register a new friend in the persistent roster with a stable color, and return their id.
