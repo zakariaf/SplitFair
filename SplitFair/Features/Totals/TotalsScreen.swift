@@ -1,5 +1,6 @@
 import BillCore
 import SwiftUI
+import UIKit
 
 /// Screen 2 — "Tax, Tip & Totals". The settle-up screen: enter tax and tip, read each person's fair
 /// total, watch it reconcile, round up, then copy or clear. Composes the design-system components
@@ -14,6 +15,8 @@ struct TotalsScreen: View {
     @State private var customTipText = ""
     @State private var expandedIDs: Set<UUID> = []
     @State private var roundUp = false
+    @State private var showClearConfirm = false
+    @State private var showCopied = false
 
     private let presets = [15, 18, 20, 25]
 
@@ -33,6 +36,7 @@ struct TotalsScreen: View {
                         currency: store.bill.currency
                     )
                     roundUpRow
+                    actions
                 }
                 .padding(.horizontal, 16)
                 .padding(.top, 64)
@@ -174,6 +178,45 @@ struct TotalsScreen: View {
             return accumulated + (rounded - cents)
         }
         return surplus > 0 ? "+\(MoneyDisplay.full(Money(surplus), store.bill.currency)) → tip" : nil
+    }
+
+    private var actions: some View {
+        HStack(spacing: 12) {
+            SecondaryButton(
+                title: showCopied ? "Copied ✓" : "Copy summary",
+                systemImage: showCopied ? "checkmark" : "doc.on.doc"
+            ) { copySummary() }
+
+            ShareLink(item: Summary.text(for: store.bill)) {
+                Image(systemName: "square.and.arrow.up")
+                    .font(.system(size: 16, weight: .bold)).foregroundStyle(Color.ink)
+                    .frame(width: 46, height: 46)
+                    .background(RoundedRectangle(cornerRadius: 16, style: .continuous).fill(Color.surface))
+                    .overlay(RoundedRectangle(cornerRadius: 16, style: .continuous).strokeBorder(Color.keyline, lineWidth: 2))
+                    .hardShadow(RoundedRectangle(cornerRadius: 16, style: .continuous), dx: 2, dy: 3)
+            }
+
+            Spacer()
+            DangerButton(title: "Clear bill") { showClearConfirm = true }
+        }
+        .confirmationDialog("Clear this bill?", isPresented: $showClearConfirm, titleVisibility: .visible) {
+            Button("Clear bill", role: .destructive) {
+                store.clear()
+                dismiss()
+            }
+            Button("Cancel", role: .cancel) {}
+        } message: {
+            Text("This can't be undone.")
+        }
+    }
+
+    private func copySummary() {
+        UIPasteboard.general.string = Summary.text(for: store.bill)
+        withAnimation { showCopied = true }
+        Task {
+            try? await Task.sleep(for: .seconds(1.5))
+            withAnimation { showCopied = false }
+        }
     }
 
     private var backButton: some View {
