@@ -32,8 +32,16 @@ struct BillScreen: View {
                             people: store.bill.people,
                             currency: store.bill.currency,
                             onToggle: { store.toggleAssignment(item: item.id, person: $0) },
-                            onSharedByAll: { store.assignToEveryone(item: item.id) }
+                            onSharedByAll: { store.assignToEveryone(item: item.id) },
+                            onSetAmount: { store.setItemAmount(item.id, $0) }
                         )
+                        .contextMenu {
+                            Button(role: .destructive) {
+                                store.deleteItem(item.id)
+                            } label: {
+                                Label("Delete \(item.label.isEmpty ? "item" : item.label)", systemImage: "trash")
+                            }
+                        }
                     }
                     AddItemRow()
                 }

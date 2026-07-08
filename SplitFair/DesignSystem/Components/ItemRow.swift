@@ -11,6 +11,10 @@ struct ItemRow: View {
     var currency: Currency = .usd
     let onToggle: (Person.ID) -> Void
     let onSharedByAll: () -> Void
+    var onSetAmount: (Money) -> Void = { _ in }
+
+    @State private var editing = false
+    @State private var editText = ""
 
     private var assignees: [Person] { people.filter { item.assigneeIDs.contains($0.id) } }
     private var isUnassigned: Bool { assignees.isEmpty }
@@ -38,6 +42,9 @@ struct ItemRow: View {
                         .foregroundStyle(Color.ink)
                 }
                 .frame(width: 74, height: 74)
+                .contentShape(Rectangle())
+                .onTapGesture { startEdit() }
+                .accessibilityLabel(Text("Price \(MoneyDisplay.full(item.amount, currency)), tap to edit"))
             }
 
             HStack(spacing: 8) {
@@ -65,6 +72,20 @@ struct ItemRow: View {
         .overlay(shape.strokeBorder(Color.keyline, lineWidth: 2))
         .hardShadow(shape)
         .accessibilityElement(children: .combine)
+        .alert("Edit price", isPresented: $editing) {
+            TextField("0.00", text: $editText).keyboardType(.decimalPad)
+            Button("Save") { commitEdit() }
+            Button("Cancel", role: .cancel) {}
+        }
+    }
+
+    private func startEdit() {
+        editText = MoneyDisplay.plain(item.amount, currency)
+        editing = true
+    }
+
+    private func commitEdit() {
+        if let amount = MoneyEdge.parse(editText, currency: currency) { onSetAmount(amount) }
     }
 
     private func initials(_ person: Person) -> String {
