@@ -1,0 +1,56 @@
+# SwiftLint configuration for SplitFair.
+# Run `swiftlint --strict` (install: brew install swiftlint). CI enforces it.
+
+included:
+  - SplitFair
+  - Packages/BillCore/Sources
+  - Packages/BillCore/Tests
+
+excluded:
+  - build
+  - DerivedData
+  - "**/.build"
+
+line_length:
+  warning: 140
+  error: 200
+  ignores_comments: true
+  ignores_urls: true
+
+type_body_length:
+  warning: 350
+  error: 500
+
+file_length:
+  warning: 500
+  error: 900
+
+# Money math uses short, conventional names (W = total weight, R = residual, n, k, i).
+identifier_name:
+  min_length:
+    warning: 1
+    error: 1
+  excluded:
+    - id
+    - W
+    - R
+    - n
+    - k
+    - i
+    - x
+    - y
+    - w
+
+opt_in_rules:
+  - closure_spacing
+  - collection_alignment
+  - empty_count
+  - explicit_init
+  - first_where
+  - sorted_first_last
+  - unneeded_parentheses_in_closure_argument
+
+disabled_rules:
+  - todo # TODO/FIXME markers are allowed during the build
+
+reporter: "xcode"

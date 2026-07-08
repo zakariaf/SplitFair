@@ -1,0 +1,11 @@
+# SwiftFormat configuration for SplitFair.
+# Run `swiftformat .` (install: brew install swiftformat). CI checks with --lint.
+
+--swiftversion 6.0
+--indent 4
+--maxwidth none
+--trimwhitespace always
+--stripunusedargs closure-only
+--self remove
+--importgrouping testable-bottom
+--exclude .build,build,DerivedData

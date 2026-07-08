@@ -1,0 +1,21 @@
+#!/bin/sh
+# SplitFair pre-commit gate: format, lint, and run the money-math suite.
+# Enable once with:  git config core.hooksPath .githooks
+set -e
+
+if command -v swiftformat >/dev/null 2>&1; then
+    swiftformat --lint . || { echo "swiftformat found issues — run 'swiftformat .'"; exit 1; }
+else
+    echo "note: swiftformat not installed (brew install swiftformat) — skipping format check"
+fi
+
+if command -v swiftlint >/dev/null 2>&1; then
+    swiftlint --strict || { echo "swiftlint --strict failed"; exit 1; }
+else
+    echo "note: swiftlint not installed (brew install swiftlint) — skipping lint"
+fi
+
+# The correctness gate: the pure money-math suite must be green.
+if [ -d Packages/BillCore ]; then
+    ( cd Packages/BillCore && swift test ) || { echo "BillCore money-math tests failed"; exit 1; }
+fi
