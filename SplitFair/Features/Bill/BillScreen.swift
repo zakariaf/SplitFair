@@ -51,6 +51,13 @@ struct BillScreen: View {
             }
         }
         .safeAreaInset(edge: .bottom) { footer }
+        // A light tap on every assignment change (single toggle or a Shared-by-all cascade).
+        .sensoryFeedback(.selection, trigger: assignmentSignature)
+    }
+
+    /// Changes on any assignment toggle — the trigger for the assign haptic.
+    private var assignmentSignature: Int {
+        store.bill.items.reduce(0) { $0 + $1.assigneeIDs.count }
     }
 
     private var footer: some View {
