@@ -12,6 +12,7 @@ struct TotalsScreen: View {
     @State private var tipBase: TipBase = .preTax
     @State private var showCustomTip = false
     @State private var customTipText = ""
+    @State private var expandedIDs: Set<UUID> = []
 
     private let presets = [15, 18, 20, 25]
 
@@ -23,7 +24,7 @@ struct TotalsScreen: View {
                 VStack(alignment: .leading, spacing: 22) {
                     header
                     taxTip
-                    // Task 7.3 — per-person total cards
+                    totalsCards
                     // Task 7.4 — reconciliation banner
                     // Task 7.5 — round-up
                 }
@@ -75,6 +76,63 @@ struct TotalsScreen: View {
     private var selectedPercent: Int? {
         if case let .percent(percent) = store.bill.tip, presets.contains(percent) { return percent }
         return nil
+    }
+
+    private var totalsCards: some View {
+        VStack(alignment: .leading, spacing: 13) {
+            Text("What each person owes")
+                .font(.display(15)).foregroundStyle(Color.inkSoft)
+            ForEach(orderedPeople) { person in
+                PersonTotalCard(
+                    name: person.name,
+                    diner: DinerPalette.style(for: person.colorIndex),
+                    initials: initials(person),
+                    breakdown: store.totals.perPerson[person.id] ?? .zero,
+                    lines: lines(for: person),
+                    currency: store.bill.currency,
+                    expanded: expandBinding(person.id)
+                )
+            }
+        }
+    }
+
+    /// Bento order — the biggest ower sits first.
+    private var orderedPeople: [Person] {
+        store.bill.people.sorted {
+            total(for: $0) > total(for: $1)
+        }
+    }
+
+    private func total(for person: Person) -> Int {
+        store.totals.perPerson[person.id]?.total.minorUnits ?? 0
+    }
+
+    /// A person's item shares, computed with the same `allocate` primitive as the totals.
+    private func lines(for person: Person) -> [PersonLedgerLine] {
+        store.bill.items.compactMap { item in
+            let assignees = store.bill.people.filter { item.assigneeIDs.contains($0.id) }
+            guard let index = assignees.firstIndex(where: { $0.id == person.id }) else { return nil }
+            let shares = allocate(amountCents: item.amount.minorUnits, weights: Array(repeating: 1, count: assignees.count))
+            return PersonLedgerLine(
+                label: item.label.isEmpty ? "Item" : item.label,
+                amount: Money(shares[index]),
+                sharedWays: assignees.count
+            )
+        }
+    }
+
+    private func expandBinding(_ id: UUID) -> Binding<Bool> {
+        Binding(
+            get: { expandedIDs.contains(id) },
+            set: { isOn in
+                if isOn { expandedIDs.insert(id) } else { expandedIDs.remove(id) }
+            }
+        )
+    }
+
+    private func initials(_ person: Person) -> String {
+        let trimmed = person.name.trimmingCharacters(in: .whitespaces)
+        return trimmed.isEmpty ? "?" : String(trimmed.prefix(2))
     }
 
     private var backButton: some View {

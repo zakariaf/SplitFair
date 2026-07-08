@@ -84,6 +84,8 @@ public struct Breakdown: Hashable, Sendable {
         self.tip = tip
         self.total = total
     }
+
+    public static let zero = Breakdown(subtotal: .zero, tax: .zero, tip: .zero, total: .zero)
 }
 
 /// The fully computed result of a bill: each person's breakdown plus the reconciliation totals.
