@@ -2,20 +2,6 @@ import Foundation
 import Testing
 @testable import BillCore
 
-/// A small deterministic RNG (SplitMix64) so fuzzed cases are reproducible: the same seed always
-/// produces the same inputs, so a failure points at an exact case rather than a flaky one.
-private struct SeededRNG: RandomNumberGenerator {
-    private var state: UInt64
-    init(seed: UInt64) { state = seed }
-    mutating func next() -> UInt64 {
-        state = state &+ 0x9E37_79B9_7F4A_7C15
-        var z = state
-        z = (z ^ (z >> 30)) &* 0xBF58_476D_1CE4_E5B9
-        z = (z ^ (z >> 27)) &* 0x94D0_49BB_1331_11EB
-        return z ^ (z >> 31)
-    }
-}
-
 @Suite("allocate — largest remainder")
 struct AllocateTests {
     /// THE core invariant, fuzzed 500 ways: the parts always sum to the exact input, and every
