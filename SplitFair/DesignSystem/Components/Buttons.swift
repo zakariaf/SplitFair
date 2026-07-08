@@ -20,7 +20,7 @@ struct PrimaryButton: View {
                 if enabled, let systemImage { Image(systemName: systemImage) }
             }
             .font(.money(16))
-            .foregroundStyle(enabled ? Color.white : Color.inkSoft)
+            .foregroundStyle(enabled ? Color.white : Color.ink)
             .padding(.vertical, 15)
             .padding(.horizontal, 22)
         }

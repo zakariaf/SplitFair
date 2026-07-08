@@ -38,6 +38,16 @@
                ReferencedContainer = "container:SplitFair.xcodeproj">
             </BuildableReference>
          </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "300000000000000000000001"
+               BuildableName = "SplitFairUITests.xctest"
+               BlueprintName = "SplitFairUITests"
+               ReferencedContainer = "container:SplitFair.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
       </Testables>
    </TestAction>
    <LaunchAction

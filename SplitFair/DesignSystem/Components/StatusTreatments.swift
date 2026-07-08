@@ -27,7 +27,7 @@ struct FooterRail<Trailing: View>: View {
                 if unassignedCount > 0 {
                     Label("\(unassignedCount) item\(unassignedCount == 1 ? "" : "s") unassigned",
                           systemImage: "exclamationmark.triangle.fill")
-                        .font(.caption2.weight(.bold)).foregroundStyle(Color.warning)
+                        .font(.caption2.weight(.bold)).foregroundStyle(Color.warningInk)
                 }
             }
             Spacer(minLength: 8)

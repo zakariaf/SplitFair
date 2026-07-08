@@ -43,7 +43,8 @@ extension Color {
     static let tangerine = Color(light: 0xFF_5A2C, dark: 0xFF_6E44) // primary CTA
     static let acidLime = Color(light: 0xB8_E600, dark: 0xD2_FF3A) // live tip readout (always ink text)
     static let success = Color(light: 0x1F_B25A, dark: 0x34_D07A) // reconciliation ✓ ONLY
-    static let warning = Color(light: 0xFF_9E1C, dark: 0xFF_B44D) // unassigned (with hazard tape)
+    static let warning = Color(light: 0xFF_9E1C, dark: 0xFF_B44D) // unassigned fill / icon (with hazard tape)
+    static let warningInk = Color(light: 0x9A_5B00, dark: 0xFF_B44D) // dark amber for warning TEXT on light (>=4.5:1)
     static let warningFill = Color(light: 0xFF_EBC4, dark: 0x3A_2A12)
     static let danger = Color(light: 0xE5_453C, dark: 0xFF_5A50) // Clear bill ONLY
 }

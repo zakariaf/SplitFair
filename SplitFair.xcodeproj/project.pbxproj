@@ -19,16 +19,25 @@
 			remoteGlobalIDString = 100000000000000000000005;
 			remoteInfo = SplitFair;
 		};
+		30000000000000000000000B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 100000000000000000000001 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 100000000000000000000005;
+			remoteInfo = SplitFair;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		100000000000000000000006 /* SplitFair.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SplitFair.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		200000000000000000000003 /* SplitFairTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SplitFairTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		300000000000000000000003 /* SplitFairUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SplitFairUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		100000000000000000000004 /* SplitFair */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (100000000000000000000013 /* Exceptions */, ); explicitFileTypes = {}; explicitFolders = (); path = SplitFair; sourceTree = "<group>"; };
 		200000000000000000000002 /* SplitFairTests */ = {isa = PBXFileSystemSynchronizedRootGroup; path = SplitFairTests; sourceTree = "<group>"; };
+		300000000000000000000002 /* SplitFairUITests */ = {isa = PBXFileSystemSynchronizedRootGroup; path = SplitFairUITests; sourceTree = "<group>"; };
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -62,6 +71,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		300000000000000000000005 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -70,6 +86,7 @@
 			children = (
 				100000000000000000000004 /* SplitFair */,
 				200000000000000000000002 /* SplitFairTests */,
+				300000000000000000000002 /* SplitFairUITests */,
 				100000000000000000000003 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -79,6 +96,7 @@
 			children = (
 				100000000000000000000006 /* SplitFair.app */,
 				200000000000000000000003 /* SplitFairTests.xctest */,
+				300000000000000000000003 /* SplitFairUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -133,6 +151,27 @@
 			productReference = 200000000000000000000003 /* SplitFairTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
+		300000000000000000000001 /* SplitFairUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 300000000000000000000007 /* Build configuration list for PBXNativeTarget "SplitFairUITests" */;
+			buildPhases = (
+				300000000000000000000004 /* Sources */,
+				300000000000000000000005 /* Frameworks */,
+				300000000000000000000006 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				30000000000000000000000A /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				300000000000000000000002 /* SplitFairUITests */,
+			);
+			name = SplitFairUITests;
+			productName = SplitFairUITests;
+			productReference = 300000000000000000000003 /* SplitFairUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -147,6 +186,10 @@
 						CreatedOnToolsVersion = 16.4;
 					};
 					200000000000000000000001 = {
+						CreatedOnToolsVersion = 16.4;
+						TestTargetID = 100000000000000000000005;
+					};
+					300000000000000000000001 = {
 						CreatedOnToolsVersion = 16.4;
 						TestTargetID = 100000000000000000000005;
 					};
@@ -171,6 +214,7 @@
 			targets = (
 				100000000000000000000005 /* SplitFair */,
 				200000000000000000000001 /* SplitFairTests */,
+				300000000000000000000001 /* SplitFairUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -180,6 +224,11 @@
 			isa = PBXTargetDependency;
 			target = 100000000000000000000005 /* SplitFair */;
 			targetProxy = 20000000000000000000000B /* PBXContainerItemProxy */;
+		};
+		30000000000000000000000A /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 100000000000000000000005 /* SplitFair */;
+			targetProxy = 30000000000000000000000B /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -198,6 +247,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		300000000000000000000006 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -209,6 +265,13 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		200000000000000000000004 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		300000000000000000000004 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -355,6 +418,38 @@
 			};
 			name = Release;
 		};
+		300000000000000000000008 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.splitfair.SplitFairUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = SplitFair;
+			};
+			name = Debug;
+		};
+		300000000000000000000009 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.splitfair.SplitFairUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = SplitFair;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -381,6 +476,15 @@
 			buildConfigurations = (
 				200000000000000000000008 /* Debug */,
 				200000000000000000000009 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		300000000000000000000007 /* Build configuration list for PBXNativeTarget "SplitFairUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				300000000000000000000008 /* Debug */,
+				300000000000000000000009 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

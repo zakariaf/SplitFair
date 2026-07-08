@@ -31,7 +31,7 @@ struct ItemRow: View {
                         .foregroundStyle(item.label.isEmpty ? Color.inkSoft : Color.ink)
                     if isUnassigned {
                         Label("tap a name", systemImage: "exclamationmark.triangle.fill")
-                            .font(.caption).foregroundStyle(Color.warning)
+                            .font(.caption.weight(.semibold)).foregroundStyle(Color.warningInk)
                     }
                 }
                 Spacer(minLength: 8)

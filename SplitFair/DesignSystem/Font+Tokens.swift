@@ -24,8 +24,9 @@ extension Font {
         .system(size: size, weight: weight)
     }
 
-    /// Chip initials — SF Rounded Semibold.
-    static var chipInitials: Font { .system(size: 15, weight: .semibold, design: .rounded) }
+    /// Chip initials — SF Rounded Heavy (bold + >=14pt so it qualifies as large text at 3:1, letting
+    /// white/ink initials meet contrast on the vivid diner colours).
+    static var chipInitials: Font { .system(size: 15, weight: .heavy, design: .rounded) }
 
     // MARK: - HARD COPY type scale
     //

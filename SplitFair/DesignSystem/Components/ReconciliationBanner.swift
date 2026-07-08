@@ -34,7 +34,7 @@ struct ReconciliationBanner: View {
             VStack(alignment: .leading, spacing: 3) {
                 Text(reconciles ? "Totals add up to" : "Totals don't reconcile")
                     .font(.display(15))
-                    .foregroundStyle(deep.opacity(0.85))
+                    .foregroundStyle(deep)
                 HStack(alignment: .firstTextBaseline, spacing: 9) {
                     Text(MoneyDisplay.full(Money(shownTotal), currency))
                         .font(.money(28)).foregroundStyle(deep)
