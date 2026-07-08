@@ -17,6 +17,7 @@ struct TotalsScreen: View {
     @State private var roundUp = false
     @State private var showClearConfirm = false
     @State private var showCopied = false
+    @State private var clearedSignal = false
 
     private let presets = [15, 18, 20, 25]
 
@@ -159,7 +160,7 @@ struct TotalsScreen: View {
             Spacer()
         }
         .padding(4)
-        .sensoryFeedback(.impact(weight: .light), trigger: roundUp)
+        .sensoryFeedback(.impact(flexibility: .soft), trigger: roundUp)
     }
 
     /// The (higher) amount actually paid when round-up is on — nearest dollar up. Display only.
@@ -201,6 +202,7 @@ struct TotalsScreen: View {
         }
         .confirmationDialog("Clear this bill?", isPresented: $showClearConfirm, titleVisibility: .visible) {
             Button("Clear bill", role: .destructive) {
+                clearedSignal.toggle()
                 store.clear()
                 dismiss()
             }
@@ -208,6 +210,8 @@ struct TotalsScreen: View {
         } message: {
             Text("This can't be undone.")
         }
+        .sensoryFeedback(.selection, trigger: store.bill.tip)
+        .sensoryFeedback(.success, trigger: clearedSignal)
     }
 
     private func copySummary() {
