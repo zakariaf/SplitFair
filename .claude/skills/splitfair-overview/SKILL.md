@@ -5,18 +5,19 @@ description: Orientation for building SplitFair, a native iOS (SwiftUI) offline 
 
 # SplitFair — build overview
 
-SplitFair is a native **iOS / SwiftUI** app that splits a shared bill by **who ordered what** — not by headcount. Two screens, fully offline, no account, no ads, no data stored beyond the current bill.
+SplitFair is a native **iOS / SwiftUI** app that splits a shared bill by **who ordered what** — not by headcount. Three screens, fully offline, no account, no ads, no data ever leaving the device. It keeps a **local library of past bills** and a **running who-owes-whom balance** (EPIC 10 expanded it from the original single-bill, two-screen app).
 
 ## Non-negotiables (true across every skill)
 
 1. **Correctness over features.** Per-person totals MUST sum to the grand total to the exact cent. All money is integer minor units (cents); a `Double`/`Float` never touches money. → `splitfair-money-math`
 2. **Right-sized, not enterprise.** One `@Observable` store, no ViewModels, no TCA/VIPER, no SwiftData. Reject over-engineering. → `splitfair-app-architecture`
-3. **Offline & private.** No network calls, no analytics, no accounts. Persist only the single current bill on device. → `splitfair-persistence`
+3. **Offline & private.** No network calls, no analytics, no accounts, no sync. Persist a local library of bills plus a friends roster on device — never uploaded. → `splitfair-persistence`
 4. **Bold but legible.** The look is *Warm Receipt Brutalism* ("HARD COPY"): colorful stickers and stamps, but every number stays ink-on-paper. → `splitfair-design-system`
 
-## The two screens
+## The three screens
 
-- **Screen 1 "The Bill":** roster of color-coded diner chips + item rows; tap chips to assign who ordered each item (2+ = split evenly); sticky footer with running subtotal + Next.
+- **Screen 0 "Bills":** the launch screen — a running balances summary ("Ben owes you $X") over the library of saved bills; tap a bill to open, "+" for a new one, long-press to duplicate/rename/delete.
+- **Screen 1 "The Bill":** roster of color-coded diner chips + item rows; tap chips to assign who ordered each item (2+ = split evenly); a "Who paid?" strip; sticky footer with running subtotal + Next.
 - **Screen 2 "Tax, Tip & Totals":** tax field, tip presets, per-person total cards (tap to expand), a reconciliation "SETTLED ✓" banner, round-up, Clear bill.
 
 ## Skill map

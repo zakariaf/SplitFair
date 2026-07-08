@@ -5,6 +5,7 @@ import SwiftUI
 /// roster on top, a scrolling item list, and a sticky footer with the running subtotal + Next.
 struct BillScreen: View {
     @Environment(BillStore.self) private var store
+    @Environment(\.dismiss) private var dismiss
     @State private var showTotals = false
     @State private var wiggle = false
     @State private var blockedTaps = 0
@@ -20,6 +21,10 @@ struct BillScreen: View {
         }
         .toolbar(.hidden, for: .navigationBar)
         .navigationDestination(isPresented: $showTotals) { TotalsScreen() }
+        // The open bill was cleared (deleted) from the Totals screen ⇒ return to the library.
+        .onChange(of: store.selectedBillID) { _, newValue in
+            if newValue == nil { dismiss() }
+        }
     }
 
     private var populated: some View {

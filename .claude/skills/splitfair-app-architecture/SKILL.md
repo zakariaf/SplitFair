@@ -5,7 +5,7 @@ description: The right-sized SwiftUI architecture for SplitFair — Model-View w
 
 # SplitFair — app architecture
 
-Two thin screens over one shared bill. The correct altitude is **Model-View (MV) with `@Observable`** — Apple's current default. Pour the engineering budget into the money math (`splitfair-money-math`), keep everything else small.
+Three thin screens (Bills · The Bill · Totals) over one shared store that owns the whole library. The correct altitude is **Model-View (MV) with `@Observable`** — Apple's current default. Pour the engineering budget into the money math (`splitfair-money-math`), keep everything else small. (EPIC 10 grew this from the original two-screen, single-bill app; it is still ONE store, still no SwiftData/ViewModels.)
 
 ```
 Views (SwiftUI)  ─ read store.totals, send intents
@@ -19,8 +19,8 @@ BillCore   (local SPM package, Foundation ONLY)  ─ pure, tested → splitfair-
 
 | Area | Choice |
 |---|---|
-| UI | 100% SwiftUI. `@main App` + `WindowGroup` + `NavigationStack`; one plain `NavigationLink` to Screen 2. No AppDelegate/SceneDelegate, no `UIViewRepresentable`. |
-| State | Exactly one `@MainActor @Observable final class BillStore`. Totals are a **computed** property (live recompute, no drift, no "Calculate" button). |
+| UI | 100% SwiftUI. `@main App` + `WindowGroup` + `NavigationStack`; plain pushes Home → Bill → Totals via `.navigationDestination(isPresented:)` — **no** `NavigationPath`/route enums/Coordinators. No AppDelegate/SceneDelegate, no `UIViewRepresentable`. |
+| State | Exactly one `@MainActor @Observable final class BillStore` owning the bills library + roster + selection. `totals` and `balances` are **computed** (live recompute, no drift, no "Calculate" button). |
 | Reactivity | `@Observable` (Observation framework). **Never** `ObservableObject`/`@Published`/Combine. |
 | Concurrency | Swift 6.2 Approachable Concurrency (default actor = `@MainActor`). Value-type models are already `Sendable`. |
 | Deployment target | **iOS 17.0** (18 acceptable), built against the newest SDK. iOS 17 is where `@Observable` + `.sensoryFeedback` land. Liquid Glass comes from the SDK you compile against, not the floor. |

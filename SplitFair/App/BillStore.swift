@@ -117,7 +117,8 @@ final class BillStore {
         saveTask = nil
         bills.removeAll { $0.id == id }
         library.deleteBill(id)
-        if selectedBillID == id { selectedBillID = bills.first?.id } // nil ⇒ back to the empty library
+        // Deselect when the open bill is deleted, so the editing screens pop back to the library.
+        if selectedBillID == id { selectedBillID = nil }
     }
 
     func renameBill(_ id: Bill.ID, to title: String) {

@@ -136,6 +136,18 @@ struct BillStoreTests {
         #expect(store.meID == ana)
     }
 
+    @Test("a friend keeps one roster identity across bills")
+    func rosterIdentityStable() {
+        let store = BillStore(library: LibraryStore(baseURL: tempBase()))
+        let ana = store.addFriend(named: "Ana")
+        store.addParticipant(ana)   // lazily starts bill 1 with Ana
+        store.newBill()
+        store.addParticipant(ana)   // bill 2, same Ana
+        #expect(store.roster.filter { $0.id == ana }.count == 1)
+        #expect(store.bills.count == 2)
+        #expect(store.bills.allSatisfy { bill in bill.people.contains { $0.id == ana } })
+    }
+
     // MARK: - Persistence wiring
 
     private func tempBase() -> URL {

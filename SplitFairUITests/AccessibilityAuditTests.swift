@@ -15,8 +15,14 @@ final class AccessibilityAuditTests: XCTestCase {
         .hitRegion, .sufficientElementDescription, .textClipped,
     ]
 
+    func testBillsHomeAccessibility() throws {
+        let app = launch(["--seed-sample"]) // default root is the Bills home (library + balances)
+        try app.performAccessibilityAudit(for: structural)
+        try auditContrastTolerant(app)
+    }
+
     func testBillScreenAccessibility() throws {
-        let app = launch(["--seed-sample"])
+        let app = launch(["--start-bill"])
         try app.performAccessibilityAudit(for: structural)
         try auditContrastTolerant(app)
     }
