@@ -2,27 +2,37 @@ import BillCore
 import SwiftUI
 
 /// The inline "add item" affordance: a dashed card that expands into a price + optional-label entry.
-/// (Task 6.4 refines the input ergonomics — cents-accumulator, keyboard Done toolbar, auto-label.)
+/// The price uses a decimal pad (no return key), so a keyboard "Done" toolbar commits it; the label
+/// chains to the price with the keyboard's Next. Amounts are parsed via `MoneyEdge` (locale-aware,
+/// strict) into integer cents.
 struct AddItemRow: View {
     @Environment(BillStore.self) private var store
     @State private var expanded = false
     @State private var priceText = ""
     @State private var labelText = ""
-    @FocusState private var priceFocused: Bool
+    @FocusState private var field: Field?
+
+    private enum Field { case label, price }
 
     var body: some View {
         if expanded {
             VStack(spacing: 12) {
                 TextField("Label (optional)", text: $labelText)
                     .textInputAutocapitalization(.words)
+                    .autocorrectionDisabled()
+                    .submitLabel(.next)
+                    .focused($field, equals: .label)
+                    .onSubmit { field = .price }
                     .font(.personName).foregroundStyle(Color.ink)
+
                 HStack {
                     Text("$").font(.ledger(18)).foregroundStyle(Color.inkSoft)
                     TextField("0.00", text: $priceText)
                         .keyboardType(.decimalPad)
                         .font(.ledger(20)).foregroundStyle(Color.ink)
-                        .focused($priceFocused)
+                        .focused($field, equals: .price)
                 }
+
                 HStack(spacing: 12) {
                     SecondaryButton(title: "Cancel") { reset() }
                     Spacer()
@@ -30,11 +40,17 @@ struct AddItemRow: View {
                 }
             }
             .card()
-        } else {
-            AddItemCard {
-                expanded = true
-                priceFocused = true
+            .toolbar {
+                ToolbarItemGroup(placement: .keyboard) {
+                    Spacer()
+                    Button("Done") { add() }
+                        .fontWeight(.bold)
+                        .disabled(parsedAmount == nil)
+                }
             }
+            .onAppear { field = .price }
+        } else {
+            AddItemCard { expanded = true }
         }
     }
 
@@ -52,5 +68,6 @@ struct AddItemRow: View {
         expanded = false
         priceText = ""
         labelText = ""
+        field = nil
     }
 }
