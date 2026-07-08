@@ -81,4 +81,46 @@ struct BillStoreTests {
         #expect(store.bill.people.isEmpty)
         #expect(store.bill.items.isEmpty)
     }
+
+    // MARK: - Persistence wiring
+
+    private func tempURL() -> URL {
+        FileManager.default.temporaryDirectory.appending(path: "billstore-\(UUID().uuidString).json")
+    }
+
+    @Test("auto-save debounces then persists; a fresh store restores it on launch")
+    func autoSaveRestores() async throws {
+        let url = tempURL()
+        defer { try? FileManager.default.removeItem(at: url) }
+        let store = BillStore(draftStore: BillDraftStore(url: url), saveDebounce: .milliseconds(20))
+        store.addPerson(named: "Ana")
+        store.addItem(amount: Money(1250))
+        try? await Task.sleep(for: .milliseconds(150)) // let the debounce fire
+        let reloaded = BillStore(draftStore: BillDraftStore(url: url))
+        #expect(reloaded.bill.people.count == 1)
+        #expect(reloaded.bill.items.count == 1)
+    }
+
+    @Test("flush persists immediately, without waiting for the debounce")
+    func flushImmediate() async throws {
+        let url = tempURL()
+        defer { try? FileManager.default.removeItem(at: url) }
+        let store = BillStore(draftStore: BillDraftStore(url: url), saveDebounce: .seconds(60))
+        store.addPerson(named: "Ana")
+        await store.flush()
+        #expect(BillDraftStore(url: url).load().people.count == 1)
+    }
+
+    @Test("clear deletes the file and cancels the pending save so it stays gone")
+    func clearCancelsPendingSave() async throws {
+        let url = tempURL()
+        defer { try? FileManager.default.removeItem(at: url) }
+        let store = BillStore(draftStore: BillDraftStore(url: url), saveDebounce: .milliseconds(20))
+        store.addPerson(named: "Ana")
+        await store.flush()
+        #expect(FileManager.default.fileExists(atPath: url.path))
+        store.clear()
+        try? await Task.sleep(for: .milliseconds(150)) // wait past the debounce clear scheduled
+        #expect(!FileManager.default.fileExists(atPath: url.path)) // stayed gone -> save was cancelled
+    }
 }

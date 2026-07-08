@@ -5,6 +5,7 @@ struct SplitFairApp: App {
     /// The single store, constructed ONCE at the app root and injected into the environment.
     /// Never construct it inside a child view — `@State` re-runs its initializer on rebuilds.
     @State private var store = BillStore()
+    @Environment(\.scenePhase) private var scenePhase
 
     var body: some Scene {
         WindowGroup {
@@ -12,6 +13,13 @@ struct SplitFairApp: App {
                 RootPlaceholderView()
             }
             .environment(store)
+        }
+        .onChange(of: scenePhase) { _, newPhase in
+            // Belt-and-suspenders: flush the draft immediately when leaving the foreground,
+            // in addition to the debounced auto-save, so a background/lock never loses the bill.
+            if newPhase != .active {
+                Task { await store.flush() }
+            }
         }
     }
 }

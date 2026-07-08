@@ -5,15 +5,26 @@ import Observation
 /// The single source of truth for the app. One `@MainActor @Observable` store owns the current
 /// `Bill`; both screens read it and mutate it only through intent methods. Totals are a COMPUTED
 /// property, so they recompute live (no "Calculate" button) and can never drift from a stored copy.
+///
+/// The current bill auto-saves (debounced) on every mutation and is restored on launch — the only
+/// thing persisted, ever (see `BillDraftStore`). No history, no accounts, no sync.
 @MainActor @Observable
 final class BillStore {
-    private(set) var bill: Bill
+    private(set) var bill: Bill {
+        didSet { scheduleSave() }
+    }
 
     /// Derived on read — never stored. Reconciliation is guaranteed by `BillMath` (see BillCore).
     var totals: BillResult { BillMath.compute(bill) }
 
-    init(bill: Bill = .empty) {
-        self.bill = bill
+    @ObservationIgnored private let draftStore: BillDraftStore
+    @ObservationIgnored private let saveDebounce: Duration
+    @ObservationIgnored private var saveTask: Task<Void, Never>?
+
+    init(draftStore: BillDraftStore = BillDraftStore(), saveDebounce: Duration = .milliseconds(600)) {
+        self.draftStore = draftStore
+        self.saveDebounce = saveDebounce
+        self.bill = draftStore.load() // restore on launch (didSet does not fire during init)
     }
 
     // MARK: - People
@@ -82,9 +93,36 @@ final class BillStore {
         bill.tip = tip
     }
 
-    // MARK: - Reset
+    // MARK: - Reset & persistence
 
+    /// Clear the bill. Order matters: setting `.empty` schedules a save, which we immediately cancel
+    /// before deleting the file — otherwise the pending save would re-create it.
     func clear() {
         bill = .empty
+        saveTask?.cancel()
+        saveTask = nil
+        draftStore.clear()
+    }
+
+    /// Persist immediately (used when the scene leaves `.active`), skipping the debounce.
+    func flush() async {
+        saveTask?.cancel()
+        saveTask = nil
+        let snapshot = bill
+        let store = draftStore
+        await Task.detached { try? store.save(snapshot) }.value
+    }
+
+    /// Debounced auto-save: coalesces rapid edits, then writes off the main actor.
+    private func scheduleSave() {
+        saveTask?.cancel()
+        let snapshot = bill
+        let store = draftStore
+        let delay = saveDebounce
+        saveTask = Task {
+            try? await Task.sleep(for: delay)
+            if Task.isCancelled { return }
+            await Task.detached { try? store.save(snapshot) }.value
+        }
     }
 }
