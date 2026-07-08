@@ -52,6 +52,14 @@ struct BillScreen: View {
                             }
                         }
                         AddItemRow()
+                        if !store.bill.items.isEmpty {
+                            WhoPaidControl(
+                                people: store.bill.people,
+                                payerID: store.bill.payerID,
+                                onSelect: { store.setPayer($0) }
+                            )
+                            .padding(.top, 4)
+                        }
                     }
                     .animation(.spring(response: 0.4, dampingFraction: 0.82), value: store.bill.items.count)
                     .padding(.horizontal, 20)

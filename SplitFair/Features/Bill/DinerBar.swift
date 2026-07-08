@@ -37,6 +37,12 @@ struct DinerBar: View {
                             }
                         }
                 }
+                ForEach(availableFriends) { friend in
+                    DinerChip(diner: DinerPalette.style(for: friend.colorIndex), initials: initials(friend), assigned: false, showsShadow: false)
+                        .onTapGesture { store.addParticipant(friend.id) }
+                        .accessibilityLabel(Text("Add \(friend.name)"))
+                        .accessibilityHint(Text("Double tap to add to this bill"))
+                }
                 addField
             }
             .padding(.horizontal, 20)
@@ -50,6 +56,12 @@ struct DinerBar: View {
             Button("Save") { commitRename() }
             Button("Cancel", role: .cancel) {}
         }
+    }
+
+    /// Persistent friends not yet on this bill — tap to add them (reuses their stable identity, so
+    /// balances accumulate across bills). Empty on the first-ever bill.
+    private var availableFriends: [Person] {
+        store.roster.filter { friend in !store.bill.people.contains { $0.id == friend.id } }
     }
 
     private var renameShown: Binding<Bool> {
