@@ -25,6 +25,8 @@ struct PersonTotalCard: View {
     let breakdown: Breakdown
     let lines: [PersonLedgerLine]
     var currency: Currency = .usd
+    /// When round-up is on, the (higher) amount actually paid; `breakdown.total` stays the exact one.
+    var roundedTotal: Money?
     @Binding var expanded: Bool
 
     var body: some View {
@@ -33,7 +35,7 @@ struct PersonTotalCard: View {
                 DinerChip(diner: diner, initials: initials)
                 Text(name).font(.personName).foregroundStyle(Color.ink)
                 Spacer(minLength: 8)
-                Text(MoneyDisplay.full(breakdown.total, currency))
+                Text(MoneyDisplay.full(roundedTotal ?? breakdown.total, currency))
                     .font(.personTotal).foregroundStyle(Color.ink) // ink, never colored
                 Image(systemName: "chevron.down")
                     .font(.system(size: 15, weight: .bold))
@@ -49,6 +51,11 @@ struct PersonTotalCard: View {
                     }
                     ledgerRow("Tax", MoneyDisplay.plain(breakdown.tax, currency), meta: true)
                     ledgerRow("Tip", MoneyDisplay.plain(breakdown.tip, currency), meta: true)
+                    if let roundedTotal, roundedTotal.minorUnits > breakdown.total.minorUnits {
+                        ledgerRow("Rounded up → tip",
+                                  "+" + MoneyDisplay.plain(roundedTotal - breakdown.total, currency),
+                                  meta: true)
+                    }
                 }
             }
         }

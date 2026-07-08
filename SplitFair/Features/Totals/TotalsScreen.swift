@@ -13,6 +13,7 @@ struct TotalsScreen: View {
     @State private var showCustomTip = false
     @State private var customTipText = ""
     @State private var expandedIDs: Set<UUID> = []
+    @State private var roundUp = false
 
     private let presets = [15, 18, 20, 25]
 
@@ -28,9 +29,10 @@ struct TotalsScreen: View {
                     ReconciliationBanner(
                         grandTotal: store.totals.grandTotal,
                         reconciles: true,
+                        roundingNote: roundUpSurplus,
                         currency: store.bill.currency
                     )
-                    // Task 7.5 — round-up
+                    roundUpRow
                 }
                 .padding(.horizontal, 16)
                 .padding(.top, 64)
@@ -94,6 +96,7 @@ struct TotalsScreen: View {
                     breakdown: store.totals.perPerson[person.id] ?? .zero,
                     lines: lines(for: person),
                     currency: store.bill.currency,
+                    roundedTotal: roundedTotal(for: person),
                     expanded: expandBinding(person.id)
                 )
             }
@@ -137,6 +140,40 @@ struct TotalsScreen: View {
     private func initials(_ person: Person) -> String {
         let trimmed = person.name.trimmingCharacters(in: .whitespaces)
         return trimmed.isEmpty ? "?" : String(trimmed.prefix(2))
+    }
+
+    private var roundUpRow: some View {
+        HStack(spacing: 12) {
+            Toggle("", isOn: $roundUp).labelsHidden().tint(Color.success)
+            VStack(alignment: .leading, spacing: 2) {
+                Text("Round each person up to $1")
+                    .font(.personName).foregroundStyle(Color.ink)
+                if let surplus = roundUpSurplus {
+                    Text("Adds \(surplus)").font(.caption).foregroundStyle(Color.inkSoft)
+                }
+            }
+            Spacer()
+        }
+        .padding(4)
+        .sensoryFeedback(.impact(weight: .light), trigger: roundUp)
+    }
+
+    /// The (higher) amount actually paid when round-up is on — nearest dollar up. Display only.
+    private func roundedTotal(for person: Person) -> Money? {
+        guard roundUp else { return nil }
+        let cents = total(for: person)
+        return Money(cents <= 0 ? cents : ((cents + 99) / 100) * 100)
+    }
+
+    /// The honest surplus that round-up adds across the table, "+$X → tip".
+    private var roundUpSurplus: String? {
+        guard roundUp else { return nil }
+        let surplus = store.bill.people.reduce(0) { accumulated, person in
+            let cents = total(for: person)
+            let rounded = cents <= 0 ? cents : ((cents + 99) / 100) * 100
+            return accumulated + (rounded - cents)
+        }
+        return surplus > 0 ? "+\(MoneyDisplay.full(Money(surplus), store.bill.currency)) → tip" : nil
     }
 
     private var backButton: some View {
