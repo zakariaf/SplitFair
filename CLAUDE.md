@@ -2,14 +2,16 @@
 
 **This file is a NON-NEGOTIABLE CONTRACT.** Every rule below is binding on every task, every session. When a rule conflicts with convenience, speed, or a "better idea," the rule wins — if a change would violate it, stop and raise it instead of working around it.
 
-SplitFair is a native **iOS / SwiftUI** app that splits a restaurant/grocery bill by **who ordered what** — fully offline, no account, no ads, nothing stored beyond the current bill.
+SplitFair is a native **iOS / SwiftUI** app that splits a restaurant/grocery bill by **who ordered what** — fully offline, no account, no ads, no data ever leaving the device. It keeps a local library of past bills and the running who-owes-whom balance between you and your friends.
 
 ## The four non-negotiables
 
 1. **Exact-cent reconciliation.** Per-person totals MUST sum to the grand total to the exact cent, for any bill. All money is `Int` minor units routed through the single `allocate()` largest-remainder primitive. A `Double`/`Float` must NEVER touch money. Never store a total — totals are always computed. The `$97.20` acceptance bill must stay green.
-2. **Offline & private.** No network calls, no analytics, no SDKs, no accounts. Persist only the single current bill on device. The App Store privacy label reads "Data Not Collected."
-3. **Right-sized, not enterprise.** Two screens, complexity 2/5. One `@Observable` store. NO ViewModels, NO SwiftData, NO TCA/VIPER/Coordinators. If you reach for one of those, you are wrong — reconsider.
-4. **Bold but legible (HARD COPY).** A number NEVER sits on a gradient, chip fill, or glass — money is always ink-on-paper. Depth is a hard offset shadow (0 blur). Exactly one glass element (the footer rail).
+2. **Offline & private.** No network calls, no analytics, no SDKs, no accounts, no sync. Persist a **local library of bills plus a friends roster** on device — never uploaded, never synced. The App Store privacy label reads "Data Not Collected."
+3. **Right-sized, not enterprise.** Three screens (Bills · The Bill · Totals), complexity ~4/5. Still **exactly one** `@Observable` store. NO ViewModels, NO SwiftData, NO TCA/VIPER/Coordinators. If you reach for one of those, you are wrong — reconsider.
+4. **Bold but legible (HARD COPY).** A number NEVER sits on a gradient, chip fill, or glass — money is always ink-on-paper. Depth is a hard offset shadow (0 blur). Exactly one glass element (the footer rail). Balance direction ("owes you" / "you owe") is carried by words + an arrow, **never** by red/green.
+
+> **#2 and #3 were amended by EPIC 10** (bills library + running balances), a deliberate expansion from the original single-bill, two-screen app — see `epics/EPIC-10-bills-library-and-balances.md`. **#1 (exact-cent reconciliation) and #4 (money is ink-on-paper) have never been relaxed and still gate every task.**
 
 ## How we build: skills first, epics in order
 
@@ -47,7 +49,7 @@ When a task's "Done when" is met, run this ritual before starting the next task.
 
 - **Two rounding sites, not one:** `allocate()` AND `percent → cents`. Round the percent to `Int` once before `allocate()`.
 - **`@State private var store` is constructed once at the App root**, then injected — never inside a rebuilt child view.
-- **Persist to Application Support, atomic writes, default file protection** (not `.completeFileProtection`); debounce + flush on `scenePhase` leaving `.active`.
+- **Persist the bills library + roster as JSON in Application Support** (one file per bill, plus a roster file), atomic writes, default file protection (not `.completeFileProtection`); debounce + flush on `scenePhase` leaving `.active`.
 - **The design/architecture guidance is the skills** — there is no separate architecture or design doc; do not look for or cite one.
 - **Identity is a stored `let id = UUID()`**, never `Equatable`-on-all-fields.
 
