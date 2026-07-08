@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		100000000000000000000012 /* BillCore in Frameworks */ = {isa = PBXBuildFile; productRef = 100000000000000000000011 /* BillCore */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		100000000000000000000006 /* SplitFair.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SplitFair.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -19,6 +23,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				100000000000000000000012 /* BillCore in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -60,6 +65,9 @@
 				100000000000000000000004 /* SplitFair */,
 			);
 			name = SplitFair;
+			packageProductDependencies = (
+				100000000000000000000011 /* BillCore */,
+			);
 			productName = SplitFair;
 			productReference = 100000000000000000000006 /* SplitFair.app */;
 			productType = "com.apple.product-type.application";
@@ -88,6 +96,9 @@
 			);
 			mainGroup = 100000000000000000000002;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				100000000000000000000010 /* XCLocalSwiftPackageReference "Packages/BillCore" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 100000000000000000000003 /* Products */;
 			projectDirPath = "";
@@ -244,6 +255,20 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		100000000000000000000010 /* XCLocalSwiftPackageReference "Packages/BillCore" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = Packages/BillCore;
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		100000000000000000000011 /* BillCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = BillCore;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 100000000000000000000001 /* Project object */;
 }
