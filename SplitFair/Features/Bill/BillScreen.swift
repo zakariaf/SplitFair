@@ -38,6 +38,10 @@ struct BillScreen: View {
                                 onSetAmount: { store.setItemAmount(item.id, $0) }
                             )
                             .id(item.id)
+                            .transition(.asymmetric(
+                                insertion: .scale(scale: 0.92).combined(with: .opacity),
+                                removal: .opacity
+                            ))
                             .contextMenu {
                                 Button(role: .destructive) {
                                     store.deleteItem(item.id)
@@ -48,6 +52,7 @@ struct BillScreen: View {
                         }
                         AddItemRow()
                     }
+                    .animation(.spring(response: 0.4, dampingFraction: 0.82), value: store.bill.items.count)
                     .padding(.horizontal, 16)
                     .padding(.top, 8)
                     .padding(.bottom, 130)

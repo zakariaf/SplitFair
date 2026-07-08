@@ -14,6 +14,7 @@ struct DinerBar: View {
             HStack(spacing: 10) {
                 ForEach(store.bill.people) { person in
                     DinerChip(diner: DinerPalette.style(for: person.colorIndex), initials: initials(person))
+                        .transition(.scale(scale: 0.6).combined(with: .opacity))
                         .contextMenu {
                             Button(role: .destructive) {
                                 store.deletePerson(person.id)
@@ -26,6 +27,7 @@ struct DinerBar: View {
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 12)
+            .animation(.spring(response: 0.35, dampingFraction: 0.6), value: store.bill.people.count)
         }
     }
 

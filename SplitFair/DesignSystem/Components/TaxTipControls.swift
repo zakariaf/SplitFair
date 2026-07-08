@@ -90,6 +90,8 @@ struct TipChip: View {
                 .background(RoundedRectangle(cornerRadius: 15).fill(selected ? AnyShapeStyle(Color.tangerine) : AnyShapeStyle(Color.surface)))
                 .overlay(RoundedRectangle(cornerRadius: 15).strokeBorder(Color.keyline, lineWidth: 2))
                 .hardShadow(RoundedRectangle(cornerRadius: 15), dx: 2, dy: 3)
+                .scaleEffect(selected ? 1.06 : 1.0)
+                .animation(.spring(response: 0.3, dampingFraction: 0.6), value: selected)
         }
         .buttonStyle(.plain)
     }
