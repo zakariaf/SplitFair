@@ -1,0 +1,14 @@
+# Claude Code — local, machine-specific settings (keep out of version control)
+.claude/settings.local.json
+
+# macOS
+.DS_Store
+
+# Xcode / Swift (for when the app is scaffolded)
+xcuserdata/
+*.xcuserstate
+DerivedData/
+build/
+.build/
+*.xcscmblueprint
+*.xccheckout

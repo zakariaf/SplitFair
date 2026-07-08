@@ -1,0 +1,735 @@
+<title>SplitFair — HARD COPY mockup</title>
+<style>
+  :root{
+    /* ---- app tokens: light ---- */
+    --canvas:#FAF2E2; --surface:#FFFFFF; --sheet:#FFFFFF;
+    --ink:#1A1613; --ink-soft:#6E6152; --keyline:#1A1613; --divider:#E7DCC6;
+    --shadow:#1A1613;            /* hard offset shadow colour */
+    --tangerine:#FF5A2C; --lime:#B8E600; --lime-ink:#1A1613;
+    --success:#1FB25A; --warn:#FF9E1C; --warn-fill:#FFEBC4; --danger:#E5453C;
+    --grid-dot:rgba(0,0,0,.045);
+    /* page frame */
+    --desk:#EAD9BD; --desk-2:#E0CBA8; --frame:#141018; --frame-line:#2b2333;
+    /* diners */
+    --d1:#F2542D; --d1i:#fff; --d2:#E84AA6; --d2i:#fff; --d3:#8A5CF6; --d3i:#fff;
+    --d4:#2E7DF7; --d4i:#fff; --d5:#17BEBB; --d5i:#1A1613; --d6:#16A085; --d6i:#fff;
+    --d7:#F4B400; --d7i:#1A1613; --d8:#B5651D; --d8i:#fff; --d9:#5C6B8A; --d9i:#fff; --d10:#3FA34D; --d10i:#fff;
+
+    --r-row:22px; --r-card:26px; --r-chip:999px;
+    --sp:16px;
+    --font-money:ui-rounded,"SF Pro Rounded",-apple-system,system-ui,"Segoe UI",sans-serif;
+    --font-ledger:ui-monospace,"SF Mono","Menlo","Roboto Mono",monospace;
+    --font-voice:ui-serif,"Iowan Old Style","Palatino Linotype",Georgia,"Times New Roman",serif;
+    --font-body:-apple-system,system-ui,"Segoe UI",Roboto,sans-serif;
+  }
+  @media (prefers-color-scheme:dark){
+    :root{
+      --canvas:#16121C; --surface:#221C2E; --sheet:#2B2438;
+      --ink:#F7EDDD; --ink-soft:#B3A594; --keyline:#F7EDDD; --divider:#3A3348;
+      --shadow:#0C0912;
+      --tangerine:#FF6E44; --lime:#D2FF3A; --lime-ink:#1A1613;
+      --success:#34D07A; --warn:#FFB44D; --warn-fill:#3A2A12; --danger:#FF5A50;
+      --grid-dot:rgba(255,255,255,.05);
+      --desk:#0e0b13; --desk-2:#161019; --frame:#000; --frame-line:#2b2333;
+      --d1:#FF6A46; --d2:#F361B8; --d3:#9E77FF; --d4:#4C93FF; --d5:#2AD3D0;
+      --d6:#22B899; --d7:#FFC21F; --d8:#CE7A31; --d9:#7686A6; --d10:#54BA62;
+      --d1i:#fff;--d2i:#fff;--d3i:#fff;--d4i:#fff;--d5i:#0C0912;--d6i:#fff;--d7i:#0C0912;--d8i:#fff;--d9i:#fff;--d10i:#fff;
+    }
+  }
+  /* explicit theme overrides (viewer toggle wins in both directions) */
+  :root[data-theme="light"]{
+    --canvas:#FAF2E2; --surface:#FFFFFF; --sheet:#FFFFFF; --ink:#1A1613; --ink-soft:#6E6152;
+    --keyline:#1A1613; --divider:#E7DCC6; --shadow:#1A1613; --tangerine:#FF5A2C; --lime:#B8E600;
+    --success:#1FB25A; --warn:#FF9E1C; --warn-fill:#FFEBC4; --danger:#E5453C; --grid-dot:rgba(0,0,0,.045);
+    --desk:#EAD9BD; --desk-2:#E0CBA8; --frame:#141018;
+    --d1:#F2542D;--d2:#E84AA6;--d3:#8A5CF6;--d4:#2E7DF7;--d5:#17BEBB;--d6:#16A085;--d7:#F4B400;--d8:#B5651D;--d9:#5C6B8A;--d10:#3FA34D;
+    --d1i:#fff;--d2i:#fff;--d3i:#fff;--d4i:#fff;--d5i:#1A1613;--d6i:#fff;--d7i:#1A1613;--d8i:#fff;--d9i:#fff;--d10i:#fff;
+  }
+  :root[data-theme="dark"]{
+    --canvas:#16121C; --surface:#221C2E; --sheet:#2B2438; --ink:#F7EDDD; --ink-soft:#B3A594;
+    --keyline:#F7EDDD; --divider:#3A3348; --shadow:#0C0912; --tangerine:#FF6E44; --lime:#D2FF3A;
+    --success:#34D07A; --warn:#FFB44D; --warn-fill:#3A2A12; --danger:#FF5A50; --grid-dot:rgba(255,255,255,.05);
+    --desk:#0e0b13; --desk-2:#161019; --frame:#000;
+    --d1:#FF6A46;--d2:#F361B8;--d3:#9E77FF;--d4:#4C93FF;--d5:#2AD3D0;--d6:#22B899;--d7:#FFC21F;--d8:#CE7A31;--d9:#7686A6;--d10:#54BA62;
+    --d1i:#fff;--d2i:#fff;--d3i:#fff;--d4i:#fff;--d5i:#0C0912;--d6i:#fff;--d7i:#0C0912;--d8i:#fff;--d9i:#fff;--d10i:#fff;
+  }
+
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    font-family:var(--font-body); color:var(--ink);
+    background:
+      radial-gradient(120% 80% at 50% -10%, var(--desk-2), var(--desk) 60%);
+    min-height:100vh; display:flex; flex-direction:column; align-items:center;
+    padding:28px 16px 56px; gap:22px; -webkit-font-smoothing:antialiased;
+  }
+
+  /* ---------- page masthead ---------- */
+  .masthead{width:100%; max-width:900px; display:flex; align-items:flex-end; justify-content:space-between; gap:16px; flex-wrap:wrap}
+  .brand{display:flex; align-items:center; gap:12px}
+  .brand .mark{
+    width:40px;height:40px;border-radius:11px;background:var(--tangerine);
+    border:2px solid var(--ink); box-shadow:3px 4px 0 var(--shadow);
+    display:grid;place-items:center; color:#fff; flex:none;
+  }
+  .brand .mark svg{width:22px;height:22px}
+  .brand h1{font-family:var(--font-voice); font-weight:600; font-size:26px; margin:0; letter-spacing:.2px}
+  .brand .sub{font-size:13px;color:var(--ink-soft); margin-top:2px; letter-spacing:.3px}
+  .masthead .tools{display:flex;align-items:center;gap:10px}
+  .pill-note{font-size:12px;color:var(--ink-soft); border:1px solid var(--divider); padding:6px 10px; border-radius:999px; background:color-mix(in srgb, var(--surface) 55%, transparent)}
+  .themebtn{
+    font-family:var(--font-body); font-size:12.5px; font-weight:600; color:var(--ink);
+    background:var(--surface); border:2px solid var(--keyline); border-radius:999px;
+    padding:8px 14px; cursor:pointer; box-shadow:2px 3px 0 var(--shadow); display:flex; gap:7px; align-items:center;
+  }
+  .themebtn:active{transform:translate(1px,2px); box-shadow:1px 1px 0 var(--shadow)}
+
+  /* ---------- phone ---------- */
+  .stage{display:flex; flex-direction:column; align-items:center; gap:14px}
+  .phone{
+    position:relative; width:min(400px,94vw); height:min(830px,86vh); min-height:620px;
+    background:var(--frame); border-radius:52px; padding:11px;
+    box-shadow:0 40px 80px -30px rgba(0,0,0,.6), 0 0 0 2px var(--frame-line) inset;
+  }
+  .screen{
+    position:relative; width:100%; height:100%; border-radius:42px; overflow:hidden;
+    background:var(--canvas);
+    background-image:radial-gradient(var(--grid-dot) 1.3px, transparent 1.4px);
+    background-size:15px 15px;
+    display:flex; flex-direction:column;
+  }
+  /* notch */
+  .screen::before{content:""; position:absolute; top:0; left:50%; transform:translateX(-50%);
+    width:128px;height:26px;background:var(--frame);border-radius:0 0 16px 16px; z-index:40}
+
+  /* drifting blobs */
+  .blobs{position:absolute; inset:0; overflow:hidden; z-index:0; pointer-events:none}
+  .blob{position:absolute; border-radius:50%; filter:blur(60px); opacity:.16}
+  .blob.b1{width:230px;height:230px;background:var(--d1); top:-40px; left:-60px; animation:drift1 20s ease-in-out infinite}
+  .blob.b2{width:200px;height:200px;background:var(--d4); top:38%; right:-70px; animation:drift2 24s ease-in-out infinite}
+  .blob.b3{width:180px;height:180px;background:var(--d3); bottom:-30px; left:20%; animation:drift3 28s ease-in-out infinite}
+  @keyframes drift1{50%{transform:translate(40px,50px)}}
+  @keyframes drift2{50%{transform:translate(-46px,30px)}}
+  @keyframes drift3{50%{transform:translate(30px,-40px)}}
+
+  /* screens track */
+  .track{position:relative; z-index:1; display:flex; width:200%; height:100%;
+    transition:transform .5s cubic-bezier(.7,0,.2,1)}
+  .track.s2{transform:translateX(-50%)}
+  .pane{width:50%; height:100%; display:flex; flex-direction:column; min-height:0}
+
+  .hd{padding:38px 22px 8px; position:relative; z-index:2}
+  .hd .eyebrow{font-size:11.5px; letter-spacing:.16em; text-transform:uppercase; color:var(--ink-soft); font-weight:700}
+  .hd h2{font-family:var(--font-voice); font-weight:600; font-size:31px; margin:2px 0 0; letter-spacing:.2px}
+  .body{flex:1; min-height:0; overflow:auto; padding:8px 18px 150px; -webkit-overflow-scrolling:touch}
+  .body::-webkit-scrollbar{width:0}
+
+  /* ---------- roster bar ---------- */
+  .roster{display:flex; gap:10px; overflow-x:auto; padding:10px 4px 14px; scrollbar-width:none}
+  .roster::-webkit-scrollbar{display:none}
+
+  /* ---------- diner sticker chip ---------- */
+  .chip{
+    position:relative; flex:none; display:inline-flex; align-items:center; justify-content:center; gap:6px;
+    min-width:44px; height:44px; padding:0 15px; border-radius:var(--r-chip);
+    font-family:var(--font-money); font-weight:800; font-size:15px; letter-spacing:.3px;
+    border:2px solid var(--keyline); cursor:pointer; user-select:none; white-space:nowrap;
+    background:var(--chip,transparent); color:var(--chip-ink,var(--ink));
+    box-shadow:2px 3px 0 var(--shadow); transition:transform .18s cubic-bezier(.5,1.6,.5,1), box-shadow .15s;
+  }
+  .chip.small{height:38px;min-width:38px;font-size:13.5px;padding:0 12px}
+  .chip .tex{position:absolute; inset:0; border-radius:inherit; opacity:.16; pointer-events:none; mix-blend-mode:overlay}
+  /* corner notch */
+  .chip .notch{position:absolute; width:11px;height:11px;background:var(--canvas); border:2px solid var(--keyline); border-radius:2px; transform:rotate(45deg); z-index:2}
+  .n-tl .notch{top:-6px;left:8px}    .n-tr .notch{top:-6px;right:8px}
+  .n-bl .notch{bottom:-6px;left:8px} .n-br .notch{bottom:-6px;right:8px}
+  .n-tm .notch{top:-6px;left:50%;margin-left:-5px} .n-bm .notch{bottom:-6px;left:50%;margin-left:-5px}
+  /* second notch for 5..8 */
+  .chip .notch2{position:absolute; width:11px;height:11px;background:var(--canvas); border:2px solid var(--keyline); border-radius:2px; transform:rotate(45deg); z-index:2}
+  .n2-tl .notch2{top:-6px;left:8px}    .n2-bl .notch2{bottom:-6px;left:8px}
+  .n2-tr .notch2{top:-6px;right:8px}   .n2-br .notch2{bottom:-6px;right:8px}
+
+  /* chip states inside an item row */
+  .chip.hollow{background:transparent; color:var(--ink); box-shadow:none; opacity:.85}
+  .chip.hollow .tex{display:none}
+  .chip.hollow .notch,.chip.hollow .notch2{background:var(--canvas)}
+  .chip.on{transform:scale(1.06)}
+  .chip.add{border-style:dashed; background:transparent; color:var(--ink-soft); box-shadow:none; font-weight:700}
+
+  /* textures */
+  .t-dots .tex{background:radial-gradient(currentColor 1.2px,transparent 1.4px) 0 0/8px 8px; color:#000}
+  .t-diag .tex{background:repeating-linear-gradient(45deg,#000 0 3px,transparent 3px 8px)}
+  .t-hrule .tex{background:repeating-linear-gradient(#000 0 2px,transparent 2px 8px)}
+  .t-ring .tex{background:radial-gradient(circle at 50% 50%,transparent 42%,#000 44% 52%,transparent 54%)}
+  .t-cross .tex{background:repeating-linear-gradient(45deg,#000 0 2px,transparent 2px 7px),repeating-linear-gradient(-45deg,#000 0 2px,transparent 2px 7px)}
+  .t-check .tex{background:conic-gradient(#000 90deg,transparent 0 180deg,#000 0 270deg,transparent 0) 0 0/8px 8px}
+  .t-bars .tex{background:repeating-linear-gradient(90deg,#000 0 2px,transparent 2px 8px)}
+  .t-grid .tex{background:repeating-linear-gradient(#000 0 1.5px,transparent 1.5px 8px),repeating-linear-gradient(90deg,#000 0 1.5px,transparent 1.5px 8px)}
+  .t-wave .tex{background:repeating-linear-gradient(-30deg,#000 0 2px,transparent 2px 7px)}
+  .t-solid .tex{display:none}
+
+  /* ---------- item row ---------- */
+  .item{
+    position:relative; background:var(--surface); border-radius:var(--r-row);
+    border:2px solid var(--keyline); box-shadow:4px 5px 0 var(--shadow);
+    padding:15px 16px 14px; margin:0 2px 15px; overflow:hidden;
+  }
+  .item .edge{position:absolute; left:0; top:0; bottom:0; width:6px; background:var(--ink)}
+  .item.unassigned .edge{width:14px; background:repeating-linear-gradient(45deg,var(--warn) 0 8px,var(--ink) 8px 16px)}
+  .item .top{display:flex; align-items:center; gap:14px; padding-left:8px}
+  .item .label{flex:1; min-width:0}
+  .item .label .name{font-size:16px; font-weight:600}
+  .item .label .name.ph{color:var(--ink-soft); font-weight:500; font-style:italic}
+  .item .flag{display:none; align-items:center; gap:6px; margin-top:5px; font-size:12.5px; font-weight:700; color:var(--warn)}
+  .item.unassigned .flag{display:inline-flex}
+  .item .flag svg{width:15px;height:15px}
+
+  /* split ring + price */
+  .ring{position:relative; width:78px; height:78px; flex:none}
+  .ring svg{position:absolute; inset:0; transform:rotate(-90deg)}
+  .ring .price{position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+    font-family:var(--font-ledger); font-weight:800; font-size:16px; letter-spacing:-.3px;
+    font-variant-numeric:tabular-nums; color:var(--ink)}
+  .ring .cur{font-size:10px; align-self:flex-start; margin-top:22px; margin-right:1px; color:var(--ink-soft)}
+
+  .strip{display:flex; gap:8px; align-items:center; overflow-x:auto; padding:14px 2px 3px 8px; scrollbar-width:none}
+  .strip::-webkit-scrollbar{display:none}
+  .shared{
+    flex:none; height:34px; padding:0 13px; border-radius:999px; border:2px dashed var(--keyline);
+    background:transparent; color:var(--ink); font-family:var(--font-body); font-weight:700; font-size:12.5px;
+    cursor:pointer; display:inline-flex; align-items:center; gap:6px; white-space:nowrap;
+  }
+  .shared:active{transform:translateY(1px)}
+  .shared.filled{background:var(--ink); color:var(--canvas); border-style:solid}
+
+  .addrow{display:flex; align-items:center; justify-content:center; gap:8px; margin:2px 2px 8px;
+    border:2px dashed var(--keyline); border-radius:var(--r-row); padding:15px; color:var(--ink-soft);
+    font-weight:700; background:transparent; width:calc(100% - 4px); cursor:pointer; font-size:14px}
+
+  /* ---------- footer rail (the one glass element) ---------- */
+  .rail{
+    position:absolute; left:12px; right:12px; bottom:14px; z-index:20;
+    background:color-mix(in srgb,var(--surface) 72%, transparent);
+    -webkit-backdrop-filter:blur(18px) saturate(1.3); backdrop-filter:blur(18px) saturate(1.3);
+    border:2px solid var(--keyline); border-radius:26px; box-shadow:4px 6px 0 var(--shadow);
+    padding:12px 12px 12px 16px; display:flex; align-items:center; gap:12px;
+    -webkit-mask:radial-gradient(circle 6px at 14px -3px, transparent 6px, #000 6.5px) top left/22px 100% repeat-x, linear-gradient(#000,#000);
+    mask:radial-gradient(circle 6px at 14px -3px, transparent 6px, #000 6.5px) top left/22px 100% repeat-x, linear-gradient(#000,#000);
+    -webkit-mask-composite:source-in; mask-composite:intersect;
+  }
+  .rail .sub{flex:1; display:flex; flex-direction:column; gap:1px}
+  .rail .sub .k{font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--ink-soft); font-weight:700}
+  .rail .sub .v{font-family:var(--font-money); font-weight:900; font-size:27px; font-variant-numeric:tabular-nums; letter-spacing:-.5px}
+  .rail .warn-count{font-size:11.5px;color:var(--warn);font-weight:700;display:flex;align-items:center;gap:4px;margin-top:1px}
+  .rail .warn-count svg{width:13px;height:13px}
+
+  .btn{
+    font-family:var(--font-money); font-weight:800; font-size:16px; letter-spacing:.2px;
+    border:2px solid var(--keyline); border-radius:20px; padding:14px 20px; cursor:pointer; color:#fff;
+    background:var(--tangerine); box-shadow:3px 4px 0 var(--shadow); white-space:nowrap; display:inline-flex; align-items:center; gap:8px;
+    transition:transform .12s, box-shadow .12s;
+  }
+  .btn:active{transform:translate(2px,3px); box-shadow:1px 1px 0 var(--shadow)}
+  .btn[disabled]{background:color-mix(in srgb,var(--ink-soft) 40%, var(--surface)); color:var(--ink-soft); cursor:not-allowed; box-shadow:2px 2px 0 var(--shadow)}
+  .btn.wiggle{animation:wiggle .4s}
+  @keyframes wiggle{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+
+  /* ---------- screen 2 ---------- */
+  .taxtip{margin:6px 2px 4px; display:flex; flex-direction:column; gap:14px}
+  .taxcard{display:flex; align-items:center; gap:12px; background:var(--surface); border:2px solid var(--keyline);
+    border-radius:18px; box-shadow:3px 4px 0 var(--shadow); padding:12px 15px}
+  .taxcard .k{font-size:12px; letter-spacing:.12em; text-transform:uppercase; font-weight:800; color:var(--ink-soft)}
+  .taxcard .field{flex:1; text-align:right; font-family:var(--font-ledger); font-weight:800; font-size:20px; font-variant-numeric:tabular-nums}
+  .seg{display:inline-flex; border:2px solid var(--keyline); border-radius:999px; overflow:hidden}
+  .seg button{font-family:var(--font-body); font-weight:700; font-size:12px; padding:6px 11px; background:transparent; color:var(--ink-soft); border:0; cursor:pointer}
+  .seg button.on{background:var(--ink); color:var(--canvas)}
+
+  .tiplabel{font-size:12px; letter-spacing:.12em; text-transform:uppercase; font-weight:800; color:var(--ink-soft); margin:4px 2px 0}
+  .tips{display:flex; gap:9px; align-items:center; flex-wrap:wrap; margin:2px}
+  .tipchip{
+    font-family:var(--font-money); font-weight:800; font-size:15px; min-width:52px; text-align:center;
+    padding:11px 14px; border-radius:15px; border:2px solid var(--keyline); background:var(--surface); color:var(--ink);
+    cursor:pointer; box-shadow:2px 3px 0 var(--shadow); transition:transform .12s, box-shadow .12s;
+  }
+  .tipchip:active{transform:translate(1px,2px); box-shadow:1px 1px 0 var(--shadow)}
+  .tipchip.on{background:var(--tangerine); color:#fff}
+  .limepill{
+    margin-left:auto; font-family:var(--font-money); font-weight:900; font-size:19px; font-variant-numeric:tabular-nums;
+    background:var(--lime); color:var(--lime-ink); border:2px solid var(--keyline); border-radius:14px; padding:8px 13px;
+    box-shadow:2px 3px 0 var(--shadow); letter-spacing:-.3px;
+  }
+  .tipbase{display:flex; gap:8px; align-items:center; margin:10px 2px 2px; font-size:12.5px; color:var(--ink-soft); font-weight:600}
+
+  .totalslabel{font-family:var(--font-voice); font-size:15px; color:var(--ink-soft); margin:20px 2px 8px; letter-spacing:.3px}
+  .pcard{
+    background:var(--surface); border:2px solid var(--keyline); border-radius:var(--r-card);
+    box-shadow:4px 5px 0 var(--shadow); padding:14px 16px; margin:0 2px 13px; cursor:pointer; overflow:hidden;
+  }
+  .pcard .row{display:flex; align-items:center; gap:13px}
+  .pcard .nm{flex:1; font-size:17px; font-weight:600}
+  .pcard .tot{font-family:var(--font-money); font-weight:900; font-size:34px; font-variant-numeric:tabular-nums; letter-spacing:-.6px}
+  .pcard .chev{width:20px;height:20px;color:var(--ink-soft); transition:transform .25s}
+  .pcard.open .chev{transform:rotate(180deg)}
+  .pcard .ledger{max-height:0; opacity:0; overflow:hidden; transition:max-height .3s ease, opacity .25s; }
+  .pcard.open .ledger{max-height:260px; opacity:1; margin-top:12px}
+  .pcard .lline{display:flex; justify-content:space-between; font-family:var(--font-ledger); font-size:13.5px;
+    font-variant-numeric:tabular-nums; padding:4px 8px; border-radius:7px; color:var(--ink)}
+  .pcard .lline.meta{color:var(--ink-soft)}
+  .pcard .lline .dots{flex:1; border-bottom:1.5px dotted var(--divider); margin:0 8px; transform:translateY(-4px)}
+
+  /* reconciliation stub */
+  .recon{
+    position:relative; margin:22px 2px 14px; background:var(--success); color:#08281a;
+    border:2px solid #0c5b34; border-radius:20px; padding:18px 16px 16px; box-shadow:4px 5px 0 var(--shadow);
+    -webkit-mask:radial-gradient(circle 7px at 16px -4px, transparent 7px, #000 7.5px) top left/26px 22px repeat-x, linear-gradient(#000,#000);
+    mask:radial-gradient(circle 7px at 16px -4px, transparent 7px, #000 7.5px) top left/26px 22px repeat-x, linear-gradient(#000,#000);
+    -webkit-mask-composite:source-in; mask-composite:intersect;
+    display:flex; align-items:center; gap:14px;
+  }
+  :root[data-theme="dark"] .recon,
+  @media (prefers-color-scheme:dark){}
+  .recon .stamp{width:58px;height:58px;flex:none; transform:rotate(-9deg)}
+  .recon .txt{flex:1}
+  .recon .lead{font-family:var(--font-voice); font-weight:600; font-size:15px; opacity:.85}
+  .recon .big{font-family:var(--font-money); font-weight:900; font-size:29px; font-variant-numeric:tabular-nums; letter-spacing:-.5px; display:flex; align-items:baseline; gap:9px}
+  .recon .settled{font-family:var(--font-body); font-weight:900; font-size:12px; letter-spacing:.14em; background:#08281a; color:var(--success); padding:3px 8px; border-radius:6px}
+  .recon .heal{font-family:var(--font-ledger); font-size:11.5px; opacity:.8; margin-top:3px}
+  .stamp-in{animation:stampIn .55s cubic-bezier(.4,1.7,.5,1) both}
+  @keyframes stampIn{0%{transform:rotate(-9deg) scale(1.5); opacity:0}55%{transform:rotate(-9deg) scale(.92)}100%{transform:rotate(-9deg) scale(1); opacity:1}}
+
+  .roundup{display:flex; align-items:center; gap:12px; margin:4px 2px 16px; padding:2px}
+  .toggle{width:52px;height:31px;border-radius:999px;border:2px solid var(--keyline);background:var(--surface);position:relative;cursor:pointer;flex:none;box-shadow:2px 2px 0 var(--shadow)}
+  .toggle .knob{position:absolute;top:2px;left:2px;width:23px;height:23px;border-radius:50%;background:var(--ink);transition:left .2s}
+  .toggle.on{background:var(--success)} .toggle.on .knob{left:23px;background:#fff}
+  .roundup .lbl{flex:1;font-size:14.5px;font-weight:600}
+  .roundup .surplus{font-family:var(--font-ledger);font-size:12px;color:var(--ink-soft);display:none}
+  .roundup.on .surplus{display:block}
+
+  .actions{display:flex; gap:12px; margin:2px 2px 8px}
+  .btn.ghost{background:transparent; color:var(--ink); box-shadow:2px 3px 0 var(--shadow); flex:1; justify-content:center}
+  .btn.danger{background:transparent; color:var(--danger); box-shadow:2px 3px 0 var(--shadow)}
+  .backbtn{position:absolute; top:40px; left:18px; z-index:30; width:42px;height:42px;border-radius:50%;
+    border:2px solid var(--keyline); background:var(--surface); box-shadow:2px 3px 0 var(--shadow); cursor:pointer;
+    display:grid;place-items:center; color:var(--ink)}
+  .backbtn svg{width:20px;height:20px}
+
+  .hint{font-size:12.5px;color:var(--ink-soft); text-align:center; max-width:400px; line-height:1.6}
+  .hint b{color:var(--ink); font-weight:700}
+
+  @media (prefers-reduced-motion:reduce){
+    *{animation-duration:.001ms !important; transition-duration:.001ms !important}
+    .blob{animation:none}
+  }
+</style>
+
+<div class="masthead">
+  <div class="brand">
+    <div class="mark" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2h9l3 3v17l-2-1.4-2 1.4-2-1.4-2 1.4-2-1.4L4 22V4a2 2 0 0 1 2-2z"/><path d="M8 8h7M8 12h7M8 16h4"/></svg>
+    </div>
+    <div>
+      <h1>SplitFair</h1>
+      <div class="sub">HARD COPY — interactive design mockup</div>
+    </div>
+  </div>
+  <div class="tools">
+    <span class="pill-note">Reconciles to $97.20 · real math</span>
+    <button class="themebtn" id="themebtn" type="button" aria-label="Toggle light or dark">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2M12 20v2M4 12H2M22 12h-2M5 5l1.5 1.5M17.5 17.5 19 19M19 5l-1.5 1.5M6.5 17.5 5 19"/></svg>
+      Theme
+    </button>
+  </div>
+</div>
+
+<div class="stage">
+  <div class="phone">
+    <div class="screen">
+      <div class="blobs" aria-hidden="true"><div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div></div>
+      <div class="track" id="track">
+
+        <!-- ===== Screen 1: The Bill ===== -->
+        <section class="pane" id="pane1" aria-label="The Bill">
+          <div class="hd">
+            <div class="eyebrow">Split by who ordered what</div>
+            <h2>The Bill</h2>
+          </div>
+          <div class="body">
+            <div class="roster" id="roster"></div>
+            <div id="items"></div>
+            <button class="addrow" id="additem" type="button">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+              Add item
+            </button>
+          </div>
+          <div class="rail">
+            <div class="sub">
+              <span class="k">Subtotal</span>
+              <span class="v" id="subtotal">$0.00</span>
+              <span class="warn-count" id="warncount"></span>
+            </div>
+            <button class="btn" id="nextbtn" type="button">Next: Tax &amp; Tip
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13M13 6l6 6-6 6"/></svg>
+            </button>
+          </div>
+        </section>
+
+        <!-- ===== Screen 2: Tax, Tip & Totals ===== -->
+        <section class="pane" id="pane2" aria-label="Tax, Tip and Totals">
+          <button class="backbtn" id="backbtn" type="button" aria-label="Back to the bill">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H6M11 6l-6 6 6 6"/></svg>
+          </button>
+          <div class="hd" style="padding-left:70px">
+            <div class="eyebrow">The payoff</div>
+            <h2>Tax, Tip &amp; Totals</h2>
+          </div>
+          <div class="body">
+            <div class="taxtip">
+              <div class="taxcard">
+                <span class="k">Tax</span>
+                <span class="field" id="taxfield">$6.60</span>
+                <span class="seg"><button class="on" type="button">$</button><button type="button">%</button></span>
+              </div>
+              <div>
+                <div class="tiplabel">Tip</div>
+                <div class="tips" id="tips"></div>
+                <div class="tipbase">Tip on <b style="color:var(--ink)">&nbsp;pre-tax subtotal&nbsp;</b>
+                  <span class="seg" style="margin-left:auto"><button class="on" type="button">pre-tax</button><button type="button">total</button></span>
+                </div>
+              </div>
+            </div>
+
+            <div class="totalslabel">What each person owes</div>
+            <div id="totals"></div>
+
+            <div class="recon" id="recon">
+              <svg class="stamp" id="stamp" viewBox="0 0 64 64" aria-hidden="true">
+                <path fill="none" stroke="#08281a" stroke-width="3" d="M32 3l6.5 4.2L46 5.7l3.6 7 7.7 1.5-.5 7.8 5.9 5-3.9 6.8 2.6 7.4-7 3.4-1.6 7.7-7.8-.6-5.6 5.5L32 61l-5.8-4.9-5.6-5.5-7.8.6L11.2 43l-7-3.4 2.6-7.4L2.9 25l5.9-5-.5-7.8L16 10.7l3.6-7 7.5 1.5z"/>
+                <path fill="none" stroke="#08281a" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" d="M21 33l7.5 7.5L44 24"/>
+              </svg>
+              <div class="txt">
+                <div class="lead">Totals add up to</div>
+                <div class="big"><span id="grand">$97.20</span><span class="settled">SETTLED</span></div>
+                <div class="heal" id="heal"></div>
+              </div>
+            </div>
+
+            <div class="roundup" id="roundup">
+              <div class="toggle" id="rutoggle"><div class="knob"></div></div>
+              <div class="lbl">Round each person up to $1
+                <div class="surplus" id="surplus"></div>
+              </div>
+            </div>
+
+            <div class="actions">
+              <button class="btn ghost" type="button" id="copybtn">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2.5"/><path d="M6 15H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v1"/></svg>
+                Copy summary</button>
+              <button class="btn danger" type="button" id="clearbtn">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></svg>
+                Clear bill</button>
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </div>
+  </div>
+  <p class="hint">Tap the <b>coloured chips</b> on an item to assign who ordered it — the <b>ring splits into equal arcs</b>. Un-assign an item to see the <b>hazard-tape warning</b>. On screen two, <b>change the tip</b> and watch every total recompute and still reconcile; tap a person to expand their <b>receipt-style breakdown</b>.</p>
+</div>
+
+<script>
+(() => {
+  "use strict";
+
+  /* ---------- palette (notch + texture encode identity beyond colour) ---------- */
+  const PALETTE = [
+    {v:1, notch:"n-tl",  tex:"t-solid"},
+    {v:2, notch:"n-tr",  tex:"t-dots"},
+    {v:3, notch:"n-bl",  tex:"t-diag"},
+    {v:4, notch:"n-br",  tex:"t-hrule"},
+    {v:5, notch:"n-tl n2-tr", tex:"t-ring"},
+    {v:6, notch:"n-bl n2-br", tex:"t-cross"},
+    {v:7, notch:"n-tr n2-tl", tex:"t-check"},
+    {v:8, notch:"n-br n2-bl", tex:"t-bars"},
+    {v:9, notch:"n-tm",  tex:"t-grid"},
+    {v:10,notch:"n-bm",  tex:"t-wave"},
+  ];
+
+  /* ---------- state (the canonical $97.20 example) ---------- */
+  const uid = (n => () => "id" + (++n))(0);
+  const P = (name) => ({id:uid(), name});
+  const ana = P("Ana"), ben = P("Ben"), cy = P("Cy");
+  const state = {
+    screen:1,
+    people:[ana, ben, cy],
+    palIdx:3,
+    items:[
+      {id:uid(), label:"Salad",    cents:1250, who:new Set([ana.id])},
+      {id:uid(), label:"Steak",    cents:2800, who:new Set([ben.id])},
+      {id:uid(), label:"Cocktail", cents:900,  who:new Set([ben.id])},
+      {id:uid(), label:"Pasta",    cents:1600, who:new Set([cy.id])},
+      {id:uid(), label:"Nachos",   cents:1000, who:new Set([ana.id, ben.id, cy.id])},
+    ],
+    taxCents:660,
+    tipPct:20,
+    roundUp:false,
+  };
+  // stable colour index per person, by roster order
+  state.people.forEach((p,i)=>p.pal = PALETTE[i % PALETTE.length]);
+
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion:reduce)").matches;
+
+  /* ---------- the ONE money primitive: integer largest-remainder ---------- */
+  function allocate(amount, weights){
+    const n = weights.length;
+    if(n === 0) return [];
+    if(amount < 0) return allocate(-amount, weights).map(x => -x);
+    const san = weights.map(w => Math.max(w,0));
+    let W = san.reduce((a,b)=>a+b,0);
+    const w = W === 0 ? san.map(()=>1) : san;
+    if(W === 0) W = n;
+    const shares = new Array(n).fill(0);
+    const rema = [];
+    let dist = 0;
+    for(let i=0;i<n;i++){
+      const prod = amount * w[i];
+      const fl = Math.floor(prod / W);
+      shares[i] = fl; dist += fl;
+      rema.push({r: prod - fl*W, i});
+    }
+    let left = amount - dist;
+    rema.sort((a,b)=> b.r - a.r || a.i - b.i);
+    for(let k=0; k<left; k++) shares[rema[k].i] += 1;
+    return shares;
+  }
+
+  /* ---------- compute ---------- */
+  function assigneesOf(item){ return state.people.filter(p => item.who.has(p.id)); }
+
+  function compute(){
+    const ids = state.people.map(p=>p.id);
+    const sub = Object.fromEntries(ids.map(id=>[id,0]));
+    const perItemShare = {}; // itemId -> {personId: cents}
+    let unassigned = 0;
+    for(const it of state.items){
+      const who = assigneesOf(it);
+      if(who.length === 0){ unassigned += it.cents; continue; }
+      const parts = allocate(it.cents, who.map(()=>1));
+      perItemShare[it.id] = {};
+      who.forEach((p,idx)=>{ sub[p.id]+=parts[idx]; perItemShare[it.id][p.id]=parts[idx]; });
+    }
+    const assignedSub = ids.reduce((a,id)=>a+sub[id],0);
+    const weights = ids.map(id=>sub[id]);
+    const tipCents = Math.round(assignedSub * state.tipPct / 100);
+    const taxShares = allocate(state.taxCents, weights);
+    const tipShares = allocate(tipCents, weights);
+    const per = {};
+    ids.forEach((id,i)=>{ per[id] = {sub:sub[id], tax:taxShares[i], tip:tipShares[i], total:sub[id]+taxShares[i]+tipShares[i]}; });
+    const grand = assignedSub + state.taxCents + tipCents;
+    return {per, perItemShare, assignedSub, unassigned, tipCents, grand};
+  }
+
+  const money = c => "$" + (c/100).toLocaleString("en-US",{minimumFractionDigits:2, maximumFractionDigits:2});
+  const money2 = c => (c/100).toLocaleString("en-US",{minimumFractionDigits:2, maximumFractionDigits:2});
+
+  function chipStyle(p){ const pal=p.pal; return `--chip:var(--d${pal.v}); --chip-ink:var(--d${pal.v}i);`; }
+  function chipInner(p){ return `<span class="tex"></span><span class="notch"></span><span class="notch2"></span>${p.name?p.name.slice(0,2):"?"}`; }
+
+  /* ---------- split ring ---------- */
+  function ring(item){
+    const who = assigneesOf(item);
+    const R = 30, C = 2*Math.PI*R, cx=39, cy=39, gap = who.length>1 ? 7 : 0;
+    let arcs = "";
+    // base hollow ink ring
+    arcs += `<circle cx="${cx}" cy="${cy}" r="${R}" fill="none" stroke="var(--divider)" stroke-width="3"/>`;
+    if(who.length === 0){
+      arcs += `<circle cx="${cx}" cy="${cy}" r="${R}" fill="none" stroke="var(--ink-soft)" stroke-width="3.5" stroke-dasharray="4 6"/>`;
+    } else {
+      const seg = C/who.length;
+      who.forEach((p,i)=>{
+        const len = Math.max(seg-gap, 2);
+        arcs += `<circle cx="${cx}" cy="${cy}" r="${R}" fill="none" stroke="var(--d${p.pal.v})" stroke-width="5" stroke-linecap="round"
+                  stroke-dasharray="${len} ${C-len}" stroke-dashoffset="${-(i*seg)}"/>`;
+      });
+    }
+    return `<div class="ring"><svg viewBox="0 0 78 78">${arcs}</svg>
+      <div class="price"><span class="cur">$</span>${money2(item.cents)}</div></div>`;
+  }
+
+  /* ---------- render screen 1 ---------- */
+  const $ = s => document.querySelector(s);
+  const rosterEl=$("#roster"), itemsEl=$("#items"), subEl=$("#subtotal"), warnEl=$("#warncount"), nextBtn=$("#nextbtn");
+
+  function renderRoster(){
+    rosterEl.innerHTML = state.people.map(p =>
+      `<div class="chip ${p.pal.notch} ${p.pal.tex}" style="${chipStyle(p)}" aria-label="${p.name}">${chipInner(p)}</div>`
+    ).join("") + `<button class="chip add" id="addperson" type="button" aria-label="Add person">+ Add</button>`;
+  }
+
+  function renderItems(){
+    itemsEl.innerHTML = state.items.map(it=>{
+      const who = it.who;
+      const chips = state.people.map(p=>{
+        const on = who.has(p.id);
+        return `<div class="chip small ${p.pal.notch} ${p.pal.tex} ${on?'on':'hollow'}" style="${chipStyle(p)}"
+                  data-assign="${it.id}" data-person="${p.id}" role="button" tabindex="0"
+                  aria-label="${p.name} ${on?'assigned to':'not on'} ${it.label||'item'}">${chipInner(p)}</div>`;
+      }).join("");
+      const allOn = state.people.length>0 && state.people.every(p=>who.has(p.id));
+      return `<div class="item ${who.size===0?'unassigned':''}">
+        <div class="edge"></div>
+        <div class="top">
+          <div class="label">
+            <div class="name ${it.label?'':'ph'}">${it.label||"Item"}</div>
+            <div class="flag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01M10.3 3.9 2 18a2 2 0 0 0 1.7 3h16.6a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg>Tap a name to assign</div>
+          </div>
+          ${ring(it)}
+        </div>
+        <div class="strip">
+          ${chips}
+          <button class="shared ${allOn?'filled':''}" data-shareall="${it.id}" type="button">Shared by all</button>
+        </div>
+      </div>`;
+    }).join("");
+  }
+
+  let subShown = 0;
+  function renderFooter(animate){
+    const {assignedSub, unassigned} = compute();
+    const target = state.items.reduce((a,it)=>a+it.cents,0);
+    const nUn = state.items.filter(it=>it.who.size===0).length;
+    if(animate && !reduceMotion){ animateNumber(subShown, target, v=>subEl.textContent=money(v)); }
+    else subEl.textContent = money(target);
+    subShown = target;
+    if(nUn>0){
+      warnEl.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01M10.3 3.9 2 18a2 2 0 0 0 1.7 3h16.6a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg> ${nUn} item${nUn>1?'s':''} unassigned`;
+      nextBtn.disabled = true;
+    } else { warnEl.innerHTML = ""; nextBtn.disabled = false; }
+  }
+
+  function animateNumber(from,to,set){
+    const dur=650, t0=performance.now();
+    function step(t){ const k=Math.min(1,(t-t0)/dur); const e=1-Math.pow(1-k,3); set(Math.round(from+(to-from)*e)); if(k<1) requestAnimationFrame(step); }
+    requestAnimationFrame(step);
+  }
+
+  /* ---------- render screen 2 ---------- */
+  const tipsEl=$("#tips"), totalsEl=$("#totals"), grandEl=$("#grand"), healEl=$("#heal");
+  const PRESETS=[15,18,20,25];
+
+  function renderTips(){
+    tipsEl.innerHTML = PRESETS.map(p=>`<button class="tipchip ${p===state.tipPct?'on':''}" data-tip="${p}" type="button">${p}%</button>`).join("")
+      + `<button class="tipchip ${PRESETS.includes(state.tipPct)?'':'on'}" data-tip="custom" type="button">•••</button>`
+      + `<span class="limepill" id="limepill">= $0.00</span>`;
+  }
+
+  function renderTotals(animate){
+    const r = compute();
+    const ids = state.people.map(p=>p.id);
+    // bento: biggest ower first
+    const ordered = [...state.people].sort((a,b)=> r.per[b.id].total - r.per[a.id].total);
+    totalsEl.innerHTML = ordered.map(p=>{
+      const d = r.per[p.id];
+      const lines = state.items.filter(it=>it.who.has(p.id)).map(it=>{
+        const share = r.perItemShare[it.id][p.id];
+        const shared = it.who.size>1;
+        return `<div class="lline"><span>${it.label}${shared?` <span style="opacity:.6">·split ${it.who.size}</span>`:""}</span><span class="dots"></span><span>${money2(share)}</span></div>`;
+      }).join("");
+      return `<div class="pcard" data-card="${p.id}">
+        <div class="row">
+          <div class="chip small ${p.pal.notch} ${p.pal.tex}" style="${chipStyle(p)}">${chipInner(p)}</div>
+          <div class="nm">${p.name}</div>
+          <div class="tot">${money(d.total)}</div>
+          <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+        </div>
+        <div class="ledger">
+          ${lines}
+          <div class="lline meta"><span>Prorated tax</span><span class="dots"></span><span>${money2(d.tax)}</span></div>
+          <div class="lline meta"><span>Prorated tip</span><span class="dots"></span><span>${money2(d.tip)}</span></div>
+        </div>
+      </div>`;
+    }).join("");
+    // lime pill + grand
+    const lime = document.getElementById("limepill");
+    if(lime) lime.textContent = "= " + money(r.tipCents);
+    if(animate && !reduceMotion){ animateNumber(0, r.grand, v=>grandEl.textContent=money(v)); }
+    else grandEl.textContent = money(r.grand);
+    // rounding heal note
+    if(state.roundUp){
+      let surplus=0; ids.forEach(id=>{ const t=r.per[id].total; surplus += (Math.ceil(t/100)*100 - t); });
+      healEl.textContent = surplus>0 ? `rounding balanced · +${money(surplus)} → tip` : "";
+      $("#surplus").textContent = `Adds ${money(surplus)} across the table → tip`;
+    } else { healEl.textContent = ""; }
+  }
+
+  function stampIn(){
+    const s=$("#stamp"); if(reduceMotion) return;
+    s.classList.remove("stamp-in"); void s.offsetWidth; s.classList.add("stamp-in");
+  }
+
+  /* ---------- navigation ---------- */
+  const track=$("#track");
+  function goto(n){
+    state.screen=n;
+    track.classList.toggle("s2", n===2);
+    if(n===2){ renderTips(); renderTotals(true); setTimeout(stampIn, reduceMotion?0:220); }
+  }
+
+  /* ---------- events ---------- */
+  document.addEventListener("click", e=>{
+    const t=e.target.closest("[data-assign],[data-shareall],[data-tip],[data-card],#addperson,#additem");
+    if(!t) return;
+    if(t.dataset.assign){
+      const it=state.items.find(i=>i.id===t.dataset.assign);
+      if(it.who.has(t.dataset.person)) it.who.delete(t.dataset.person); else it.who.add(t.dataset.person);
+      renderItems(); renderFooter(false);
+    } else if(t.dataset.shareall){
+      const it=state.items.find(i=>i.id===t.dataset.shareall);
+      const all=state.people.every(p=>it.who.has(p.id));
+      it.who = all ? new Set() : new Set(state.people.map(p=>p.id));
+      renderItems(); renderFooter(false);
+    } else if(t.dataset.tip){
+      if(t.dataset.tip==="custom"){ const v=prompt("Tip %", state.tipPct); const n=parseFloat(v); if(!isNaN(n)&&n>=0&&n<100) state.tipPct=n; }
+      else state.tipPct=parseInt(t.dataset.tip,10);
+      renderTips(); renderTotals(true); setTimeout(stampIn, reduceMotion?0:120);
+    } else if(t.dataset.card){
+      const card=t.closest(".pcard"); card.classList.toggle("open");
+    } else if(t.id==="addperson"){
+      const nm=prompt("Name (optional)"); const p={id:uid(), name:(nm&&nm.trim())||("P"+(state.people.length+1))};
+      p.pal=PALETTE[state.people.length % PALETTE.length]; state.people.push(p);
+      renderRoster(); renderItems(); renderFooter(false);
+    } else if(t.id==="additem"){
+      const v=prompt("Price, e.g. 12.50"); const n=Math.round(parseFloat(v)*100);
+      if(!isNaN(n)&&n>0){ const nm=prompt("Label (optional)"); state.items.push({id:uid(),label:(nm&&nm.trim())||"",cents:n,who:new Set()}); renderItems(); renderFooter(true); }
+    }
+  });
+  document.addEventListener("keydown", e=>{
+    if((e.key==="Enter"||e.key===" ") && e.target.dataset && e.target.dataset.assign){ e.preventDefault(); e.target.click(); }
+  });
+
+  $("#nextbtn").addEventListener("click", ()=>{
+    if(nextBtn.disabled){ nextBtn.classList.remove("wiggle"); void nextBtn.offsetWidth; nextBtn.classList.add("wiggle");
+      document.querySelector(".item.unassigned")?.scrollIntoView({behavior:reduceMotion?"auto":"smooth", block:"center"}); return; }
+    goto(2);
+  });
+  $("#backbtn").addEventListener("click", ()=>goto(1));
+  $("#rutoggle").addEventListener("click", ()=>{ state.roundUp=!state.roundUp;
+    $("#rutoggle").classList.toggle("on",state.roundUp); $("#roundup").classList.toggle("on",state.roundUp); renderTotals(false); });
+  $("#copybtn").addEventListener("click", ()=>{
+    const r=compute(); const lines=state.people.map(p=>`${p.name}: ${money(r.per[p.id].total)}`).join("\n");
+    const txt=`SplitFair — total ${money(r.grand)}\n${lines}\n(tax + ${state.tipPct}% tip split by what each ordered)`;
+    navigator.clipboard?.writeText(txt).catch(()=>{});
+    const b=$("#copybtn"); const o=b.innerHTML; b.innerHTML="Copied ✓"; setTimeout(()=>b.innerHTML=o,1400);
+  });
+  $("#clearbtn").addEventListener("click", ()=>{ if(confirm("Clear this bill? This can’t be undone.")){ goto(1); } });
+
+  $("#themebtn").addEventListener("click", ()=>{
+    const cur = document.documentElement.getAttribute("data-theme")
+      || (window.matchMedia("(prefers-color-scheme:dark)").matches ? "dark":"light");
+    document.documentElement.setAttribute("data-theme", cur==="dark"?"light":"dark");
+  });
+
+  /* ---------- boot ---------- */
+  renderRoster(); renderItems(); renderFooter(true); renderTips(); renderTotals(false);
+})();
+</script>
