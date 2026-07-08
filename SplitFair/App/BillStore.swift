@@ -37,14 +37,7 @@ final class BillStore {
             let snapshot = library.loadRoster()
             roster = snapshot.people
             meID = snapshot.meID
-            // Always keep a current bill for the editing screens; a brand-new empty bill is not
-            // persisted until it is first edited (the mutate path schedules the save).
-            selectedBillID = bills.first?.id
-            if selectedBillID == nil {
-                let fresh = Bill()
-                bills = [fresh]
-                selectedBillID = fresh.id
-            }
+            selectedBillID = bills.first?.id // may be nil ⇒ the Bills home shows its empty state
         }
     }
 
@@ -124,14 +117,7 @@ final class BillStore {
         saveTask = nil
         bills.removeAll { $0.id == id }
         library.deleteBill(id)
-        if selectedBillID == id {
-            selectedBillID = bills.first?.id
-            if selectedBillID == nil {
-                let fresh = Bill()
-                bills = [fresh]
-                selectedBillID = fresh.id
-            }
-        }
+        if selectedBillID == id { selectedBillID = bills.first?.id } // nil ⇒ back to the empty library
     }
 
     func renameBill(_ id: Bill.ID, to title: String) {
@@ -278,11 +264,21 @@ final class BillStore {
 
     // MARK: - Private
 
-    /// Mutate the open bill and schedule its (debounced) save. The single mutation path.
+    /// Mutate the open bill and schedule its (debounced) save. The single mutation path. If nothing
+    /// is selected (fresh install, or after deleting the last bill), the first edit lazily starts a
+    /// bill — so editing screens always have somewhere to write, while the library can sit empty.
     private func mutateCurrent(_ transform: (inout Bill) -> Void) {
+        ensureCurrentBill()
         guard let index = bills.firstIndex(where: { $0.id == selectedBillID }) else { return }
         transform(&bills[index])
         scheduleSave(bills[index])
+    }
+
+    private func ensureCurrentBill() {
+        guard currentBill == nil else { return }
+        let fresh = Bill()
+        bills.insert(fresh, at: 0)
+        selectedBillID = fresh.id
     }
 
     /// Debounced auto-save of one bill: coalesces rapid edits, then writes off the main actor.

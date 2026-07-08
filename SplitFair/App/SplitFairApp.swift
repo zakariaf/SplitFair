@@ -7,19 +7,24 @@ struct SplitFairApp: App {
     @State private var store = BillStore(
         seedSample: CommandLine.arguments.contains("--seed-sample")
             || CommandLine.arguments.contains("--start-totals")
+            || CommandLine.arguments.contains("--start-bill")
     )
     @Environment(\.scenePhase) private var scenePhase
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
+    // Screenshot / UI-test seams that deep-link past the Bills home screen.
     private let startOnTotals = CommandLine.arguments.contains("--start-totals")
+    private let startOnBill = CommandLine.arguments.contains("--start-bill")
 
     var body: some Scene {
         WindowGroup {
             NavigationStack {
                 if startOnTotals {
-                    TotalsScreen() // screenshot/UI-test seam
-                } else {
+                    TotalsScreen()
+                } else if startOnBill {
                     BillScreen()
+                } else {
+                    BillsHomeScreen()
                 }
             }
             .environment(store)
