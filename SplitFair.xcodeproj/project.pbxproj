@@ -15,8 +15,22 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		100000000000000000000004 /* SplitFair */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = SplitFair; sourceTree = "<group>"; };
+		100000000000000000000004 /* SplitFair */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (100000000000000000000013 /* Exceptions */, ); explicitFileTypes = {}; explicitFolders = (); path = SplitFair; sourceTree = "<group>"; };
 /* End PBXFileSystemSynchronizedRootGroup section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		100000000000000000000013 /* Exceptions for "SplitFair" folder in "SplitFair" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				DesignSystem/.gitkeep,
+				Features/Bill/.gitkeep,
+				Features/Totals/.gitkeep,
+				Persistence/.gitkeep,
+				Sharing/.gitkeep,
+			);
+			target = 100000000000000000000005 /* SplitFair */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		100000000000000000000008 /* Frameworks */ = {
