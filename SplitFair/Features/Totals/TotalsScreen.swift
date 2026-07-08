@@ -25,7 +25,11 @@ struct TotalsScreen: View {
                     header
                     taxTip
                     totalsCards
-                    // Task 7.4 — reconciliation banner
+                    ReconciliationBanner(
+                        grandTotal: store.totals.grandTotal,
+                        reconciles: true,
+                        currency: store.bill.currency
+                    )
                     // Task 7.5 — round-up
                 }
                 .padding(.horizontal, 16)
