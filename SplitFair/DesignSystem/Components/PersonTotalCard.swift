@@ -37,6 +37,7 @@ struct PersonTotalCard: View {
                 Spacer(minLength: 8)
                 Text(MoneyDisplay.full(roundedTotal ?? breakdown.total, currency))
                     .font(.personTotal).foregroundStyle(Color.ink) // ink, never colored
+                    .lineLimit(1).minimumScaleFactor(0.6)
                 Image(systemName: "chevron.down")
                     .font(.system(size: 15, weight: .bold))
                     .foregroundStyle(Color.inkSoft)

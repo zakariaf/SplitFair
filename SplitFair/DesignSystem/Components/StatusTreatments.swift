@@ -21,6 +21,7 @@ struct FooterRail<Trailing: View>: View {
                 Text(amount)
                     .font(.money(26)).foregroundStyle(Color.ink)
                     .contentTransition(.numericText())
+                    .lineLimit(1).minimumScaleFactor(0.6)
                     .padding(.horizontal, 9).padding(.vertical, 2)
                     .background(Capsule().fill(Color.canvas)) // opaque: no digit over glass
                 if unassignedCount > 0 {

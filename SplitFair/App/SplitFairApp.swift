@@ -9,6 +9,7 @@ struct SplitFairApp: App {
             || CommandLine.arguments.contains("--start-totals")
     )
     @Environment(\.scenePhase) private var scenePhase
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     private let startOnTotals = CommandLine.arguments.contains("--start-totals")
 
@@ -22,6 +23,11 @@ struct SplitFairApp: App {
                 }
             }
             .environment(store)
+            // Reduce Motion: nil out animations app-wide (springs/odometer/stamp collapse to
+            // instant). The drifting blobs and glass rail already opt out of motion/transparency.
+            .transaction { transaction in
+                if reduceMotion { transaction.animation = nil }
+            }
         }
         .onChange(of: scenePhase) { _, newPhase in
             // Belt-and-suspenders: flush the draft immediately when leaving the foreground,
