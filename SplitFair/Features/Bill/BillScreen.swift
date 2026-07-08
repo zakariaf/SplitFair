@@ -35,7 +35,8 @@ struct BillScreen: View {
                                 currency: store.bill.currency,
                                 onToggle: { store.toggleAssignment(item: item.id, person: $0) },
                                 onSharedByAll: { store.assignToEveryone(item: item.id) },
-                                onSetAmount: { store.setItemAmount(item.id, $0) }
+                                onSetAmount: { store.setItemAmount(item.id, $0) },
+                                onSetLabel: { store.setItemLabel(item.id, $0) }
                             )
                             .id(item.id)
                             .transition(.asymmetric(
@@ -53,7 +54,7 @@ struct BillScreen: View {
                         AddItemRow()
                     }
                     .animation(.spring(response: 0.4, dampingFraction: 0.82), value: store.bill.items.count)
-                    .padding(.horizontal, 16)
+                    .padding(.horizontal, 20)
                     .padding(.top, 8)
                     .padding(.bottom, 130)
                 }
@@ -95,7 +96,7 @@ struct BillScreen: View {
             ) { advance() }
             .modifier(ShakeEffect(travel: wiggle ? 1 : 0))
         }
-        .padding(.horizontal, 12)
+        .padding(.horizontal, 16)
         .padding(.bottom, 8)
     }
 

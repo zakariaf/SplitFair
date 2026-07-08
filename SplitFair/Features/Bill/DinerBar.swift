@@ -3,10 +3,12 @@ import SwiftUI
 
 /// The sticky roster: a horizontal-scroll bar of diner stickers with an inline "add person" field at
 /// the end. Pressing return adds the name and keeps focus so you can rattle off "Sam, Alex, Jo"; a
-/// blank name becomes "Person N". Long-press a sticker to remove that diner.
+/// blank name becomes "Person N". Tap a sticker to rename that diner; long-press to remove them.
 struct DinerBar: View {
     @Environment(BillStore.self) private var store
     @State private var draft = ""
+    @State private var editing: Person?
+    @State private var editName = ""
     @FocusState private var focused: Bool
 
     var body: some View {
@@ -15,7 +17,19 @@ struct DinerBar: View {
                 ForEach(store.bill.people) { person in
                     DinerChip(diner: DinerPalette.style(for: person.colorIndex), initials: initials(person))
                         .transition(.scale(scale: 0.6).combined(with: .opacity))
+                        .onTapGesture { startRename(person) }
+                        .accessibilityLabel(Text(person.name))
+                        .accessibilityHint(Text("Double tap to rename"))
+                        .accessibilityActions {
+                            Button("Rename") { startRename(person) }
+                            Button("Remove \(person.name)", role: .destructive) { store.deletePerson(person.id) }
+                        }
                         .contextMenu {
+                            Button {
+                                startRename(person)
+                            } label: {
+                                Label("Rename \(person.name)", systemImage: "pencil")
+                            }
                             Button(role: .destructive) {
                                 store.deletePerson(person.id)
                             } label: {
@@ -25,10 +39,31 @@ struct DinerBar: View {
                 }
                 addField
             }
-            .padding(.horizontal, 16)
+            .padding(.horizontal, 20)
             .padding(.vertical, 12)
             .animation(.spring(response: 0.35, dampingFraction: 0.6), value: store.bill.people.count)
         }
+        .alert("Rename diner", isPresented: renameShown) {
+            TextField("Name", text: $editName)
+                .textInputAutocapitalization(.words)
+                .autocorrectionDisabled()
+            Button("Save") { commitRename() }
+            Button("Cancel", role: .cancel) {}
+        }
+    }
+
+    private var renameShown: Binding<Bool> {
+        Binding(get: { editing != nil }, set: { if !$0 { editing = nil } })
+    }
+
+    private func startRename(_ person: Person) {
+        editName = person.name
+        editing = person
+    }
+
+    private func commitRename() {
+        if let person = editing { store.renamePerson(person.id, to: editName) }
+        editing = nil
     }
 
     private var addField: some View {

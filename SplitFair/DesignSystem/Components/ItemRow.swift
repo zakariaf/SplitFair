@@ -12,8 +12,10 @@ struct ItemRow: View {
     let onToggle: (Person.ID) -> Void
     let onSharedByAll: () -> Void
     var onSetAmount: (Money) -> Void = { _ in }
+    var onSetLabel: (String) -> Void = { _ in }
 
     @State private var editing = false
+    @State private var editLabel = ""
     @State private var editText = ""
 
     private var assignees: [Person] { people.filter { item.assigneeIDs.contains($0.id) } }
@@ -34,6 +36,8 @@ struct ItemRow: View {
                             .font(.caption.weight(.semibold)).foregroundStyle(Color.warningInk)
                     }
                 }
+                .contentShape(Rectangle())
+                .onTapGesture { startEdit() }
                 Spacer(minLength: 8)
                 ZStack {
                     SplitRing(assignees: assignees.map { DinerPalette.style(for: $0.colorIndex) })
@@ -79,9 +83,12 @@ struct ItemRow: View {
                 Button(actionTitle(person)) { onToggle(person.id) }
             }
             Button("Shared by all") { onSharedByAll() }
-            Button("Edit price") { startEdit() }
+            Button("Edit item") { startEdit() }
         }
-        .alert("Edit price", isPresented: $editing) {
+        .alert("Edit item", isPresented: $editing) {
+            TextField("Name (optional)", text: $editLabel)
+                .textInputAutocapitalization(.words)
+                .autocorrectionDisabled()
             TextField("0.00", text: $editText).keyboardType(.decimalPad)
             Button("Save") { commitEdit() }
             Button("Cancel", role: .cancel) {}
@@ -103,11 +110,13 @@ struct ItemRow: View {
     }
 
     private func startEdit() {
+        editLabel = item.label
         editText = MoneyDisplay.plain(item.amount, currency)
         editing = true
     }
 
     private func commitEdit() {
+        onSetLabel(editLabel.trimmingCharacters(in: .whitespaces))
         if let amount = MoneyEdge.parse(editText, currency: currency) { onSetAmount(amount) }
     }
 

@@ -56,6 +56,14 @@ final class BillStore {
         bill.people.append(Person(name: displayName, colorIndex: colorIndex))
     }
 
+    /// Rename a diner. A blank name falls back to "Person N" (their 1-based roster position), so a
+    /// sticker never loses its identity — the roster and every assignment reference the same `id`.
+    func renamePerson(_ id: Person.ID, to name: String) {
+        guard let index = bill.people.firstIndex(where: { $0.id == id }) else { return }
+        let trimmed = name.trimmingCharacters(in: .whitespaces)
+        bill.people[index].name = trimmed.isEmpty ? "Person \(index + 1)" : trimmed
+    }
+
     /// Removing a person drops them from every item's assignees; an item left with none becomes
     /// unassigned (surfaced by the guard), never silently charged.
     func deletePerson(_ id: Person.ID) {

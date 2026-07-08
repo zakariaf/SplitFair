@@ -25,7 +25,7 @@ struct TaxTipControls: View {
     private let limeInk = Color(rgb: 0x1A_1613) // fixed dark; lime is bright in both modes
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 16) {
+        VStack(alignment: .leading, spacing: 20) {
             HStack {
                 Text("TAX").font(.caption.weight(.heavy)).tracking(1.2).foregroundStyle(Color.inkSoft)
                 Spacer()
@@ -52,12 +52,11 @@ struct TaxTipControls: View {
                 .frame(width: 170)
             }
 
-            HStack(spacing: 9) {
+            HStack(spacing: 8) {
                 ForEach(presets, id: \.self) { percent in
                     TipChip(title: "\(percent)%", selected: selectedPercent == percent) { onPreset(percent) }
                 }
                 TipChip(title: "•••", selected: selectedPercent == nil, action: onCustom)
-                Spacer(minLength: 0)
             }
 
             HStack {
@@ -71,6 +70,7 @@ struct TaxTipControls: View {
                     .contentTransition(.numericText())
             }
         }
+        .padding(.vertical, 6)
     }
 }
 
@@ -85,8 +85,8 @@ struct TipChip: View {
             Text(title)
                 .font(.money(15))
                 .foregroundStyle(selected ? Color.white : Color.ink)
-                .frame(minWidth: 48)
-                .padding(.vertical, 11).padding(.horizontal, 12)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 11).padding(.horizontal, 4)
                 .background(RoundedRectangle(cornerRadius: 15).fill(selected ? AnyShapeStyle(Color.tangerine) : AnyShapeStyle(Color.surface)))
                 .overlay(RoundedRectangle(cornerRadius: 15).strokeBorder(Color.keyline, lineWidth: 2))
                 .hardShadow(RoundedRectangle(cornerRadius: 15), dx: 2, dy: 3)

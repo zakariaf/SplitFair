@@ -39,7 +39,7 @@ struct TotalsScreen: View {
                     roundUpRow
                     actions
                 }
-                .padding(.horizontal, 16)
+                .padding(.horizontal, 20)
                 .padding(.top, 64)
                 .padding(.bottom, 120)
             }
