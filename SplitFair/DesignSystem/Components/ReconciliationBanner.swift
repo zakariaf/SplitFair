@@ -69,6 +69,9 @@ struct ReconciliationBanner: View {
 
     private func reveal() {
         guard !appeared else { return }
+        if reconciles {
+            AccessibilityNotification.Announcement("Totals add up, settled").post()
+        }
         guard !reduceMotion else {
             shownTotal = grandTotal.minorUnits
             appeared = true

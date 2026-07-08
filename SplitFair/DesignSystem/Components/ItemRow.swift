@@ -71,12 +71,35 @@ struct ItemRow: View {
         .clipShape(shape)
         .overlay(shape.strokeBorder(Color.keyline, lineWidth: 2))
         .hardShadow(shape)
-        .accessibilityElement(children: .combine)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(a11yLabel)
+        .accessibilityValue(a11yValue)
+        .accessibilityActions {
+            ForEach(people) { person in
+                Button(actionTitle(person)) { onToggle(person.id) }
+            }
+            Button("Shared by all") { onSharedByAll() }
+            Button("Edit price") { startEdit() }
+        }
         .alert("Edit price", isPresented: $editing) {
             TextField("0.00", text: $editText).keyboardType(.decimalPad)
             Button("Save") { commitEdit() }
             Button("Cancel", role: .cancel) {}
         }
+    }
+
+    private var a11yLabel: String {
+        "\(item.label.isEmpty ? "Item" : item.label), \(MoneyDisplay.full(item.amount, currency))"
+    }
+
+    private var a11yValue: String {
+        guard !assignees.isEmpty else { return "unassigned" }
+        let names = assignees.map(\.name).joined(separator: ", ")
+        return assignees.count > 1 ? "split \(assignees.count) ways by \(names)" : "ordered by \(names)"
+    }
+
+    private func actionTitle(_ person: Person) -> String {
+        (item.assigneeIDs.contains(person.id) ? "Remove " : "Add ") + person.name
     }
 
     private func startEdit() {
