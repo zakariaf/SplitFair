@@ -25,7 +25,8 @@ struct PrimaryButton: View {
             .padding(.horizontal, 22)
         }
         .buttonStyle(HardPressButtonStyle(fill: enabled ? Color.tangerine : Color.divider))
-        .disabled(!enabled)
+        // Not .disabled(): a "disabled"-looking primary (e.g. footer Next) stays tappable so it can
+        // shake + guide instead of navigating. Callers guard their own action.
         .sensoryFeedback(.selection, trigger: taps)
     }
 }

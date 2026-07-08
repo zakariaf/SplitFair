@@ -7,6 +7,7 @@ struct BillScreen: View {
     @Environment(BillStore.self) private var store
     @State private var showTotals = false
     @State private var wiggle = false
+    @State private var blockedTaps = 0
 
     var body: some View {
         ZStack {
@@ -24,35 +25,50 @@ struct BillScreen: View {
     private var populated: some View {
         VStack(spacing: 0) {
             DinerBar()
-            ScrollView {
-                VStack(spacing: 14) {
-                    ForEach(store.bill.items) { item in
-                        ItemRow(
-                            item: item,
-                            people: store.bill.people,
-                            currency: store.bill.currency,
-                            onToggle: { store.toggleAssignment(item: item.id, person: $0) },
-                            onSharedByAll: { store.assignToEveryone(item: item.id) },
-                            onSetAmount: { store.setItemAmount(item.id, $0) }
-                        )
-                        .contextMenu {
-                            Button(role: .destructive) {
-                                store.deleteItem(item.id)
-                            } label: {
-                                Label("Delete \(item.label.isEmpty ? "item" : item.label)", systemImage: "trash")
+            ScrollViewReader { proxy in
+                ScrollView {
+                    VStack(spacing: 14) {
+                        ForEach(store.bill.items) { item in
+                            ItemRow(
+                                item: item,
+                                people: store.bill.people,
+                                currency: store.bill.currency,
+                                onToggle: { store.toggleAssignment(item: item.id, person: $0) },
+                                onSharedByAll: { store.assignToEveryone(item: item.id) },
+                                onSetAmount: { store.setItemAmount(item.id, $0) }
+                            )
+                            .id(item.id)
+                            .contextMenu {
+                                Button(role: .destructive) {
+                                    store.deleteItem(item.id)
+                                } label: {
+                                    Label("Delete \(item.label.isEmpty ? "item" : item.label)", systemImage: "trash")
+                                }
                             }
                         }
+                        AddItemRow()
                     }
-                    AddItemRow()
+                    .padding(.horizontal, 16)
+                    .padding(.top, 8)
+                    .padding(.bottom, 130)
                 }
-                .padding(.horizontal, 16)
-                .padding(.top, 8)
-                .padding(.bottom, 130)
+                .onChange(of: blockedTaps) { _, _ in
+                    if let target = firstUnassignedID {
+                        withAnimation(.easeInOut) { proxy.scrollTo(target, anchor: .center) }
+                    }
+                }
             }
         }
         .safeAreaInset(edge: .bottom) { footer }
-        // A light tap on every assignment change (single toggle or a Shared-by-all cascade).
+        // A light tap on every assignment change (single toggle or a Shared-by-all cascade),
+        // and a warning tap when Next is blocked.
         .sensoryFeedback(.selection, trigger: assignmentSignature)
+        .sensoryFeedback(.warning, trigger: blockedTaps)
+    }
+
+    private var firstUnassignedID: UUID? {
+        let roster = Set(store.bill.people.map(\.id))
+        return store.bill.items.first { $0.assigneeIDs.isDisjoint(with: roster) }?.id
     }
 
     /// Changes on any assignment toggle — the trigger for the assign haptic.
@@ -91,6 +107,7 @@ struct BillScreen: View {
         if unassignedCount == 0 {
             showTotals = true
         } else {
+            blockedTaps += 1 // triggers the warning haptic + scroll-to-first-unassigned
             withAnimation(.default) { wiggle.toggle() }
         }
     }
