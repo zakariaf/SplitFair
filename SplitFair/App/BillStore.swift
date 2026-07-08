@@ -21,10 +21,30 @@ final class BillStore {
     @ObservationIgnored private let saveDebounce: Duration
     @ObservationIgnored private var saveTask: Task<Void, Never>?
 
-    init(draftStore: BillDraftStore = BillDraftStore(), saveDebounce: Duration = .milliseconds(600)) {
+    init(draftStore: BillDraftStore = BillDraftStore(), saveDebounce: Duration = .milliseconds(600), seedSample: Bool = false) {
         self.draftStore = draftStore
         self.saveDebounce = saveDebounce
-        self.bill = draftStore.load() // restore on launch (didSet does not fire during init)
+        // Restore on launch (didSet does not fire during init). `seedSample` is a testing/screenshot
+        // seam, enabled by the `--seed-sample` launch argument; it never runs in normal use.
+        self.bill = seedSample ? BillStore.sampleBill : draftStore.load()
+    }
+
+    /// The canonical $97.20 bill plus one unassigned item — used for previews, UI tests, and
+    /// screenshots via the `--seed-sample` launch argument.
+    static var sampleBill: Bill {
+        let ana = Person(name: "Ana", colorIndex: 0)
+        let ben = Person(name: "Ben", colorIndex: 1)
+        let cy = Person(name: "Cy", colorIndex: 2)
+        var bill = Bill(currency: .usd, people: [ana, ben, cy], tax: Money(660), tip: .percent(20))
+        bill.items = [
+            Item(label: "Salad", amount: Money(1250), assigneeIDs: [ana.id]),
+            Item(label: "Steak", amount: Money(2800), assigneeIDs: [ben.id]),
+            Item(label: "Cocktail", amount: Money(900), assigneeIDs: [ben.id]),
+            Item(label: "Pasta", amount: Money(1600), assigneeIDs: [cy.id]),
+            Item(label: "Nachos", amount: Money(1000), assigneeIDs: [ana.id, ben.id, cy.id]),
+            Item(label: "Fries", amount: Money(600), assigneeIDs: []),
+        ]
+        return bill
     }
 
     // MARK: - People
